@@ -29,6 +29,10 @@ const User = {
 
   delete(id) {
     execute(`DELETE FROM users WHERE id = ?`, [id]);
+  },
+
+  updatePassword(id, hashedPassword) {
+    execute(`UPDATE users SET password = ?, must_change_password = 0, updated_at = datetime('now') WHERE id = ?`, [hashedPassword, id]);
   }
 };
 
