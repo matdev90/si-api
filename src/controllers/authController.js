@@ -30,7 +30,8 @@ async function login(req, res, next) {
 
     res.json({
       token,
-      user: { id: user.id, username: user.username, name: user.name, role: user.role, unit: user.unit }
+      user: { id: user.id, username: user.username, name: user.name, role: user.role, unit: user.unit },
+      mustChangePassword: user.must_change_password === 1
     });
   } catch (err) {
     next(err);
@@ -72,4 +73,22 @@ async function me(req, res, next) {
   }
 }
 
-module.exports = { login, register, me };
+async function changePassword(req, res, next) {
+  try {
+    const { oldPassword, newPassword } = req.validated;
+    const user = await User.findById(req.user.id);
+    if (!user) throw new AppError('User not found', 404);
+
+    const valid = await bcrypt.compare(oldPassword, user.password);
+    if (!valid) throw new AppError('Current password is incorrect', 401);
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await User.updatePassword(req.user.id, hashed);
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { login, register, me, changePassword };
