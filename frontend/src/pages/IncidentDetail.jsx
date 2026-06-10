@@ -11,6 +11,24 @@ const statusLabels = {
 };
 const invTypeLabels = { komprehensif: 'Komprehensif', sederhana: 'Sederhana' };
 
+function DetailRow({ label, children }) {
+  return (
+    <div className="detail-row">
+      <span className="detail-label">{label}</span>
+      <span className="detail-value">{children || '-'}</span>
+    </div>
+  );
+}
+
+function DetailSection({ title, children }) {
+  return (
+    <div className="detail-section">
+      <h3>{title}</h3>
+      {children || <p className="text-muted">-</p>}
+    </div>
+  );
+}
+
 export default function IncidentDetail() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -57,6 +75,8 @@ export default function IncidentDetail() {
   const canUpdateStatus = ['pmkp', 'validator', 'admin'].includes(user.role);
   const canExport = ['pmkp', 'manajemen', 'admin', 'kepala_unit'].includes(user.role);
 
+  const gradeAutoColor = { BIRU: '#3B82F6', HIJAU: '#10B981', KUNING: '#F59E0B', ORANYE: '#F97316', MERAH: '#EF4444' };
+
   return (
     <div className="page">
       <div className="page-header">
@@ -66,47 +86,66 @@ export default function IncidentDetail() {
 
       <div className="detail-grid">
         <div className="card detail-main">
-          <div className="detail-row">
-            <span className="detail-label">Tipe Insiden</span>
-            <span className="detail-value">{incident.incident_type}</span>
+          <DetailRow label="Tipe Insiden">{incident.incident_type}</DetailRow>
+          <DetailRow label="Tanggal">{incident.incident_date} {incident.incident_time}</DetailRow>
+          <DetailRow label="Lokasi">{incident.location}</DetailRow>
+          <DetailRow label="Ruangan">{incident.ruangan_id || '-'}</DetailRow>
+          <DetailRow label="Status">{statusLabels[incident.status]}</DetailRow>
+          <DetailRow label="Severity">
+            {incident.severity
+              ? <span className={severityTags[incident.severity]}>{incident.severity.toUpperCase()}</span>
+              : <span className="tag tag-default">Belum di-grade</span>}
+          </DetailRow>
+          <DetailRow label="Grade Otomatis">
+            {incident.grade_otomatis
+              ? <span style={{ padding: '2px 10px', borderRadius: 4, fontWeight: 600, background: `${gradeAutoColor[incident.grade_otomatis]}15`, color: gradeAutoColor[incident.grade_otomatis] }}>{incident.grade_otomatis}</span>
+              : <span className="tag tag-default">-</span>}
+          </DetailRow>
+          <DetailRow label="Pelapor">{incident.reporter_name} ({incident.reporter_unit})</DetailRow>
+
+          <hr style={{ margin: '1rem 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
+
+          <h3 style={{ marginBottom: '0.75rem', fontSize: '.95rem', color: '#475569' }}>I. Data Pasien</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
+            <DetailRow label="No. RM">{incident.no_rm}</DetailRow>
+            <DetailRow label="Umur">{incident.umur}</DetailRow>
+            <DetailRow label="Jenis Kelamin">{incident.jenis_kelamin}</DetailRow>
+            <DetailRow label="Penanggung Biaya">{incident.penanggung_biaya}</DetailRow>
           </div>
-          <div className="detail-row">
-            <span className="detail-label">Tanggal</span>
-            <span className="detail-value">{incident.incident_date} {incident.incident_time}</span>
+          <DetailRow label="Tanggal Masuk RS">{incident.tgl_masuk_rs} {incident.jam_masuk_rs}</DetailRow>
+
+          <hr style={{ margin: '1rem 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
+
+          <h3 style={{ marginBottom: '0.75rem', fontSize: '.95rem', color: '#475569' }}>III. Penilaian Risiko (PMKP)</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
+            <DetailRow label="Probabilitas">{incident.probabilitas || '-'}</DetailRow>
+            <DetailRow label="Dampak">{incident.dampak || '-'}</DetailRow>
+            <DetailRow label="Grade">{incident.grade_otomatis || '-'}</DetailRow>
           </div>
-          <div className="detail-row">
-            <span className="detail-label">Lokasi</span>
-            <span className="detail-value">{incident.location}</span>
+
+          <DetailSection title="IV. Akibat Insiden">{incident.akibat_insiden}</DetailSection>
+
+          <DetailSection title="V. Tindakan Awal">
+            {incident.tindakan_awal && <p>{incident.tindakan_awal}</p>}
+            {incident.tindakan_oleh && <p style={{ color: '#64748b', fontSize: '.85rem' }}>Dilakukan oleh: {incident.tindakan_oleh}</p>}
+          </DetailSection>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <DetailSection title="VI. Riwayat Serupa">
+              {incident.pernah_terjadi === 'Ya' ? (
+                <>Pernah terjadi. {incident.pencegahan_ulang && <span>Pencegahan: {incident.pencegahan_ulang}</span>}</>
+              ) : 'Tidak pernah terjadi sebelumnya'}
+            </DetailSection>
           </div>
-          <div className="detail-row">
-            <span className="detail-label">Status</span>
-            <span className="detail-value">{statusLabels[incident.status]}</span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Severity</span>
-            <span className="detail-value">
-              {incident.severity
-                ? <span className={severityTags[incident.severity]}>{incident.severity.toUpperCase()}</span>
-                : <span className="tag tag-default">Belum di-grade</span>}
-            </span>
-          </div>
-          <div className="detail-row">
-            <span className="detail-label">Pelapor</span>
-            <span className="detail-value">{incident.reporter_name} ({incident.reporter_unit})</span>
-          </div>
-          <div className="detail-section">
-            <h3>Kronologis</h3>
+
+          <DetailSection title="VII. Kronologi">
             <p>{incident.description}</p>
-          </div>
-          <div className="detail-section">
-            <h3>Akibat</h3>
-            <p>{incident.consequence}</p>
-          </div>
+          </DetailSection>
+
           {incident.immediate_action && (
-            <div className="detail-section">
-              <h3>Tindakan Segera</h3>
+            <DetailSection title="Tindakan Segera (legacy)">
               <p>{incident.immediate_action}</p>
-            </div>
+            </DetailSection>
           )}
         </div>
 
