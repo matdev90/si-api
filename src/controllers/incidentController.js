@@ -11,6 +11,12 @@ async function create(req, res, next) {
     const data = req.validated;
 
     const id = uuidv4();
+    const grade = data.grade_otomatis || (
+      data.probabilitas && data.dampak
+        ? (() => { const s = data.probabilitas * data.dampak; return s <= 4 ? 'BIRU' : s <= 8 ? 'HIJAU' : s <= 15 ? 'KUNING' : 'MERAH'; })()
+        : null
+    );
+
     const incident = await Incident.create({
       id,
       reporter_id: data.is_anonymous ? null : req.user.id,
@@ -23,6 +29,21 @@ async function create(req, res, next) {
       consequence: data.consequence,
       immediate_action: data.immediate_action || null,
       attachments: data.attachments ? JSON.stringify(data.attachments) : null,
+      no_rm: data.no_rm,
+      umur: data.umur,
+      jenis_kelamin: data.jenis_kelamin,
+      penanggung_biaya: data.penanggung_biaya,
+      tgl_masuk_rs: data.tgl_masuk_rs,
+      jam_masuk_rs: data.jam_masuk_rs,
+      ruangan_id: data.ruangan_id,
+      probabilitas: data.probabilitas,
+      dampak: data.dampak,
+      grade_otomatis: grade,
+      akibat_insiden: data.akibat_insiden,
+      tindakan_awal: data.tindakan_awal,
+      tindakan_oleh: data.tindakan_oleh,
+      pernah_terjadi: data.pernah_terjadi || 'Tidak',
+      pencegahan_ulang: data.pencegahan_ulang,
     });
 
     await notifyNewIncident(incident);
