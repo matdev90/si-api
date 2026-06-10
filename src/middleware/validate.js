@@ -63,6 +63,21 @@ const incidentCreateSchema = z.object({
   immediate_action: z.string().max(2000).optional(),
   is_anonymous: z.boolean().optional(),
   attachments: z.array(z.string()).max(5).optional(),
+  no_rm: z.string().max(20).optional(),
+  umur: z.number().int().min(0).max(150).optional(),
+  jenis_kelamin: z.enum(['Laki-laki', 'Perempuan']).optional(),
+  penanggung_biaya: z.string().max(50).optional(),
+  tgl_masuk_rs: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  jam_masuk_rs: z.string().regex(/^\d{2}:\d{2}$/).optional(),
+  ruangan_id: z.string().max(36).optional(),
+  probabilitas: z.number().int().min(1).max(5).optional(),
+  dampak: z.number().int().min(1).max(5).optional(),
+  grade_otomatis: z.string().optional(),
+  akibat_insiden: z.string().max(100).optional(),
+  tindakan_awal: z.string().max(2000).optional(),
+  tindakan_oleh: z.string().max(50).optional(),
+  pernah_terjadi: z.enum(['Ya', 'Tidak']).optional(),
+  pencegahan_ulang: z.string().max(2000).optional(),
 });
 
 const incidentGradeSchema = z.object({
