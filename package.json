@@ -29,6 +29,7 @@
     "express": "^4.21.0",
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0",
+    "isomorphic-git": "^1.38.4",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "pdfkit": "^0.15.0",
@@ -42,7 +43,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "isomorphic-git": "^1.38.4",
     "supertest": "^7.2.2",
     "vitest": "^4.1.8"
   }
