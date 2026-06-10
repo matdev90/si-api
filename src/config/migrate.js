@@ -107,6 +107,18 @@ const migrations = [
         updated_at TEXT DEFAULT (datetime('now'))
       );
     `
+  },
+  {
+    name: '007_add_must_change_password',
+    sql: `
+      ALTER TABLE users ADD COLUMN must_change_password INTEGER DEFAULT 0;
+    `
+  },
+  {
+    name: '008_flag_existing_default_passwords',
+    sql: `
+      UPDATE users SET must_change_password = 1 WHERE password IS NOT NULL;
+    `
   }
 ];
 
@@ -153,7 +165,7 @@ async function run() {
     for (const user of seedUsers) {
       const id = uuidv4();
       const password = require('bcryptjs').hashSync(user.password, 10);
-      execute(`INSERT OR IGNORE INTO users (id, username, password, name, role, unit) VALUES (?, ?, ?, ?, ?, ?)`,
+      execute(`INSERT OR IGNORE INTO users (id, username, password, name, role, unit, must_change_password) VALUES (?, ?, ?, ?, ?, ?, 1)`,
         [id, user.username, password, user.name, user.role, user.unit]);
     }
     console.log(`Seeded ${seedUsers.length} default users`);
