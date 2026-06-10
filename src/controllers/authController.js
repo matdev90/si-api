@@ -76,7 +76,7 @@ async function me(req, res, next) {
 async function changePassword(req, res, next) {
   try {
     const { oldPassword, newPassword } = req.validated;
-    const user = await User.findById(req.user.id);
+    const user = await User.findByIdWithPassword(req.user.id);
     if (!user) throw new AppError('User not found', 404);
 
     const valid = await bcrypt.compare(oldPassword, user.password);
