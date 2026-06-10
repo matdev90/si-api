@@ -1,4 +1,5 @@
 const path = require('node:path');
+const fs = require('node:fs');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
 const { getDatabase, execute, query } = require('./database');
@@ -93,6 +94,19 @@ const migrations = [
         created_at TEXT DEFAULT (datetime('now'))
       );
     `
+  },
+  {
+    name: '006_create_ruangan',
+    sql: `
+      CREATE TABLE IF NOT EXISTS ruangan (
+        id TEXT PRIMARY KEY,
+        name TEXT UNIQUE NOT NULL,
+        description TEXT,
+        is_active INTEGER DEFAULT 1,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+    `
   }
 ];
 
@@ -119,7 +133,34 @@ async function runMigrations() {
   console.log('All migrations completed.');
 }
 
-runMigrations().catch(err => {
+async function run() {
+  await runMigrations();
+
+  // Auto-seed default users if none exist
+  const userCount = query(`SELECT COUNT(*) as cnt FROM users`)[0]?.cnt || 0;
+  if (userCount === 0) {
+    const bcrypt = require('bcryptjs');
+    const { v4: uuidv4 } = require('uuid');
+    const seedUsers = [
+      { username: 'admin', password: '12345', name: 'Administrator', role: 'admin', unit: 'IT' },
+      { username: 'perawat1', password: '12345', name: 'Siti Nurhaliza', role: 'pelapor', unit: 'IGD' },
+      { username: 'dokter1', password: '12345', name: 'Dr. Ahmad Fauzi', role: 'pelapor', unit: 'IGD' },
+      { username: 'validator1', password: '12345', name: 'Ns. Dewi Sartika', role: 'validator', unit: 'PMKP' },
+      { username: 'pmkp1', password: '12345', name: 'Dr. Budi Santoso', role: 'pmkp', unit: 'PMKP' },
+      { username: 'kepala_igd', password: '12345', name: 'Dr. Andi Pratama', role: 'kepala_unit', unit: 'IGD' },
+      { username: 'manajemen1', password: '12345', name: 'Hj. Fatimah', role: 'manajemen', unit: 'Direksi' },
+    ];
+    for (const user of seedUsers) {
+      const id = uuidv4();
+      const password = require('bcryptjs').hashSync(user.password, 10);
+      execute(`INSERT OR IGNORE INTO users (id, username, password, name, role, unit) VALUES (?, ?, ?, ?, ?, ?)`,
+        [id, user.username, password, user.name, user.role, user.unit]);
+    }
+    console.log(`Seeded ${seedUsers.length} default users`);
+  }
+}
+
+run().catch(err => {
   console.error('Migration failed:', err);
   process.exit(1);
 });
