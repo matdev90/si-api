@@ -3,6 +3,16 @@ import { Link } from 'react-router-dom';
 import * as api from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
+const severityClass = (s) => {
+  if (!s) return 'tag tag-default';
+  return `tag tag-${s}`;
+};
+
+const statusLabels = {
+  dilaporkan: 'Dilaporkan', divalidasi: 'Divalidasi', investigasi: 'Investigasi',
+  ditindaklanjuti: 'Ditindaklanjuti', selesai: 'Selesai', ditolak: 'Ditolak',
+};
+
 export default function Incidents() {
   const { user } = useAuth();
   const [incidents, setIncidents] = useState([]);
@@ -27,16 +37,6 @@ export default function Incidents() {
     e.preventDefault();
     setPage(1);
     fetchData();
-  };
-
-  const severityClass = (s) => {
-    if (!s) return 'tag tag-default';
-    return `tag tag-${s}`;
-  };
-
-  const statusLabels = {
-    dilaporkan: 'Dilaporkan', divalidasi: 'Divalidasi', investigasi: 'Investigasi',
-    ditindaklanjuti: 'Ditindaklanjuti', selesai: 'Selesai', ditolak: 'Ditolak',
   };
 
   return (
