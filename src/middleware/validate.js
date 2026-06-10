@@ -79,6 +79,28 @@ const investigationCompleteSchema = z.object({
   action_plan: z.string().max(5000).optional(),
 });
 
+const ruanganSchema = z.object({
+  name: z.string().min(2).max(100),
+  description: z.string().max(500).optional(),
+});
+
+const createUserSchema = z.object({
+  username: z.string().min(3).max(50),
+  password: z.string().min(4).max(100),
+  name: z.string().min(2).max(100),
+  role: z.enum(['pelapor', 'validator', 'pmkp', 'kepala_unit', 'manajemen', 'admin']),
+  unit: z.string().min(1).max(100),
+});
+
+const updateUserSchema = z.object({
+  username: z.string().min(3).max(50).optional(),
+  password: z.string().min(4).max(100).optional(),
+  name: z.string().min(2).max(100).optional(),
+  role: z.enum(['pelapor', 'validator', 'pmkp', 'kepala_unit', 'manajemen', 'admin']).optional(),
+  unit: z.string().min(1).max(100).optional(),
+  is_active: z.number().int().min(0).max(1).optional(),
+});
+
 module.exports = {
   validate,
   validateQuery,
@@ -88,4 +110,7 @@ module.exports = {
   incidentGradeSchema,
   incidentStatusSchema,
   investigationCompleteSchema,
+  ruanganSchema,
+  createUserSchema,
+  updateUserSchema,
 };
