@@ -2,6 +2,11 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as api from '../api/client';
 
+const severityClass = (s) => {
+  if (!s) return 'tag tag-default';
+  return `tag tag-${s}`;
+};
+
 export default function Investigations() {
   const [investigations, setInvestigations] = useState([]);
   const [pagination, setPagination] = useState(null);
@@ -31,31 +36,33 @@ export default function Investigations() {
         </select>
       </div>
 
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Tipe</th>
-            <th>Severity</th>
-            <th>Status</th>
-            <th>Investigasi</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {investigations.map(inv => (
-            <tr key={inv.id}>
-              <td>{inv.incident_type}</td>
-              <td>{inv.severity || '-'}</td>
-              <td>{inv.status === 'selesai' ? '✅ Selesai' : '⏳ Berlangsung'}</td>
-              <td>{inv.type}</td>
-              <td><Link to={`/investigations/${inv.id}`} className="btn btn-sm">Detail</Link></td>
+      <div className="table-container">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Tipe</th>
+              <th>Severity</th>
+              <th>Status</th>
+              <th>Investigasi</th>
+              <th></th>
             </tr>
-          ))}
-          {investigations.length === 0 && (
-            <tr><td colSpan={5} className="empty">Belum ada investigasi</td></tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {investigations.map(inv => (
+              <tr key={inv.id}>
+                <td>{inv.incident_type}</td>
+                <td><span className={severityClass(inv.severity)}>{inv.severity || '-'}</span></td>
+                <td>{inv.status === 'selesai' ? '✅ Selesai' : '⏳ Berlangsung'}</td>
+                <td>{inv.type}</td>
+                <td><Link to={`/investigations/${inv.id}`} className="btn btn-sm">Detail</Link></td>
+              </tr>
+            ))}
+            {investigations.length === 0 && (
+              <tr><td colSpan={5} className="empty">Belum ada investigasi</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {pagination && pagination.totalPages > 1 && (
         <div className="pagination">
