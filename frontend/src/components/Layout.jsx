@@ -47,10 +47,10 @@ const roleMenus = {
 };
 
 export default function Layout({ children }) {
-  const { user, logout } = useAuth();
+  const { user, mustChangePassword, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const menuItems = roleMenus[user?.role] || roleMenus.pelapor;
+  const menuItems = [...(roleMenus[user?.role] || roleMenus.pelapor)];
 
   const handleLogout = () => {
     logout();
@@ -86,12 +86,22 @@ export default function Layout({ children }) {
           ))}
         </nav>
         <div className="sidebar-footer">
+          <NavLink to="/password" className="nav-item">
+            <span className="nav-icon">🔑</span>
+            {sidebarOpen && <span className="nav-label">Ganti Password</span>}
+          </NavLink>
           <button className="logout-btn" onClick={handleLogout}>
             🚪 {sidebarOpen && 'Keluar'}
           </button>
         </div>
       </aside>
       <main className="main-content">
+        {mustChangePassword && (
+          <div className="alert alert-warning password-warning">
+            <span>⚠️ Anda menggunakan password default. Segera <NavLink to="/password">ganti password</NavLink> Anda.</span>
+            <button className="btn-close" onClick={() => navigate('/password')}>&rarr;</button>
+          </div>
+        )}
         {children}
       </main>
     </div>
