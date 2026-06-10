@@ -1,0 +1,160 @@
+{"level":30,"time":1781060866182,"pid":480886,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781060866189,"pid":480886,"hostname":"Siapp","msg":"SI-API server running on port 3000 (production)"}
+{"level":30,"time":1781060938461,"pid":480886,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781060972219,"pid":481872,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781060972236,"pid":481872,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781060983532,"pid":481872,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061003918,"pid":482265,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061003947,"pid":482265,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781061006397,"pid":482265,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"13ms","userId":"-","msg":"GET /api/v1/health 200 13ms"}
+{"level":30,"time":1781061006413,"pid":482265,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"1ms","userId":"-","msg":"GET /api/v1/health 200 1ms"}
+{"level":30,"time":1781061006415,"pid":482265,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061165786,"pid":482727,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061165803,"pid":482727,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":50,"time":1781061268643,"pid":482727,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061268654,"pid":482727,"hostname":"Siapp","method":"GET","url":"/","status":404,"duration":"14ms","userId":"-","msg":"GET / 404 14ms"}
+{"level":50,"time":1781061273424,"pid":482727,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061273426,"pid":482727,"hostname":"Siapp","method":"GET","url":"/","status":404,"duration":"3ms","userId":"-","msg":"GET / 404 3ms"}
+{"level":50,"time":1781061273505,"pid":482727,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/favicon.ico","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061273506,"pid":482727,"hostname":"Siapp","method":"GET","url":"/favicon.ico","status":404,"duration":"2ms","userId":"-","msg":"GET /favicon.ico 404 2ms"}
+{"level":50,"time":1781061274882,"pid":482727,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061274883,"pid":482727,"hostname":"Siapp","method":"GET","url":"/","status":404,"duration":"1ms","userId":"-","msg":"GET / 404 1ms"}
+{"level":30,"time":1781061281966,"pid":482727,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061559876,"pid":485036,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061559893,"pid":485036,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781061563357,"pid":485036,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061683655,"pid":487766,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061683672,"pid":487766,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781061684324,"pid":487766,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"11ms","userId":"-","msg":"GET /api/v1/health 200 11ms"}
+{"level":50,"time":1781061684344,"pid":487766,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061684346,"pid":487766,"hostname":"Siapp","method":"GET","url":"/","status":404,"duration":"4ms","userId":"-","msg":"GET / 404 4ms"}
+{"level":30,"time":1781061684578,"pid":487766,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"195ms","userId":"-","msg":"POST /api/v1/auth/login 200 195ms"}
+{"level":30,"time":1781061684609,"pid":487766,"hostname":"Siapp","method":"GET","url":"/api/v1/docs/","status":200,"duration":"2ms","userId":"-","msg":"GET /api/v1/docs/ 200 2ms"}
+{"level":30,"time":1781061705385,"pid":487766,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061731023,"pid":488434,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061731040,"pid":488434,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":50,"time":1781061733172,"pid":488434,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061733182,"pid":488434,"hostname":"Siapp","method":"GET","url":"/","status":404,"duration":"13ms","userId":"-","msg":"GET / 404 13ms"}
+{"level":30,"time":1781061749235,"pid":488434,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061757844,"pid":489017,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061757861,"pid":489017,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":50,"time":1781061760052,"pid":489017,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061760065,"pid":489017,"hostname":"Siapp","method":"GET","url":"/","status":404,"duration":"15ms","userId":"-","msg":"GET / 404 15ms"}
+{"level":30,"time":1781061760081,"pid":489017,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"2ms","userId":"-","msg":"GET /api/v1/health 200 2ms"}
+{"level":30,"time":1781061776117,"pid":489017,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061867229,"pid":490737,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061867246,"pid":490737,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":50,"time":1781061869366,"pid":490737,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061869377,"pid":490737,"hostname":"Siapp","method":"GET","url":"/","status":404,"duration":"13ms","userId":"-","msg":"GET / 404 13ms"}
+{"level":30,"time":1781061869396,"pid":490737,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"2ms","userId":"-","msg":"GET /api/v1/health 200 2ms"}
+{"level":30,"time":1781061885452,"pid":490737,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061922628,"pid":491739,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061922644,"pid":491739,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":50,"time":1781061924798,"pid":491739,"hostname":"Siapp","err":{"type":"Error","message":"ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","stack":"Error: ENOENT: no such file or directory, stat '/home/siapp/frontend/dist/index.html'","errno":-2,"code":"ENOENT","syscall":"stat","path":"/home/siapp/frontend/dist/index.html","expose":false,"statusCode":404,"status":404},"path":"/","method":"GET","msg":"Unhandled error"}
+{"level":40,"time":1781061924808,"pid":491739,"hostname":"Siapp","method":"GET","url":"/","status":404,"duration":"13ms","userId":"-","msg":"GET / 404 13ms"}
+{"level":30,"time":1781061924827,"pid":491739,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"2ms","userId":"-","msg":"GET /api/v1/health 200 2ms"}
+{"level":30,"time":1781061940875,"pid":491739,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781061965583,"pid":492167,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781061965599,"pid":492167,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781061967829,"pid":492167,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"5ms","userId":"-","msg":"GET /api/v1/health 200 5ms"}
+{"level":30,"time":1781061968061,"pid":492167,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"200ms","userId":"-","msg":"POST /api/v1/auth/login 200 200ms"}
+{"level":30,"time":1781061968091,"pid":492167,"hostname":"Siapp","method":"GET","url":"/api/v1/docs/","status":200,"duration":"3ms","userId":"-","msg":"GET /api/v1/docs/ 200 3ms"}
+{"level":30,"time":1781061968111,"pid":492167,"hostname":"Siapp","method":"GET","url":"/assets/","status":200,"duration":"4ms","userId":"-","msg":"GET /assets/ 200 4ms"}
+{"level":30,"time":1781061968147,"pid":492167,"hostname":"Siapp","method":"GET","url":"/dashboard","status":200,"duration":"2ms","userId":"-","msg":"GET /dashboard 200 2ms"}
+{"level":30,"time":1781061983864,"pid":492167,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062160178,"pid":493779,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062160196,"pid":493779,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781062173339,"pid":493779,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062226782,"pid":494603,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062226799,"pid":494603,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781062229058,"pid":494603,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"5ms","userId":"-","msg":"GET /api/v1/health 200 5ms"}
+{"level":30,"time":1781062250074,"pid":494603,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062479709,"pid":497007,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062479740,"pid":497007,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781062502401,"pid":497007,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062525680,"pid":497801,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062525697,"pid":497801,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781062527267,"pid":497801,"hostname":"Siapp","method":"GET","url":"/api/v1/health","status":200,"duration":"11ms","userId":"-","msg":"GET /api/v1/health 200 11ms"}
+{"level":40,"time":1781062527503,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"201ms","userId":"-","msg":"POST /api/v1/auth/login 401 201ms"}
+{"level":30,"time":1781062527546,"pid":497801,"hostname":"Siapp","method":"GET","url":"/api/v1/docs/","status":200,"duration":"3ms","userId":"-","msg":"GET /api/v1/docs/ 200 3ms"}
+{"level":40,"time":1781062527770,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"156ms","userId":"-","msg":"POST /api/v1/auth/login 401 156ms"}
+{"level":40,"time":1781062527948,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"157ms","userId":"-","msg":"POST /api/v1/auth/login 401 157ms"}
+{"level":40,"time":1781062528122,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"156ms","userId":"-","msg":"POST /api/v1/auth/login 401 156ms"}
+{"level":40,"time":1781062528299,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"158ms","userId":"-","msg":"POST /api/v1/auth/login 401 158ms"}
+{"level":40,"time":1781062528472,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"158ms","userId":"-","msg":"POST /api/v1/auth/login 401 158ms"}
+{"level":40,"time":1781062528646,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"154ms","userId":"-","msg":"POST /api/v1/auth/login 401 154ms"}
+{"level":40,"time":1781062528825,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"160ms","userId":"-","msg":"POST /api/v1/auth/login 401 160ms"}
+{"level":40,"time":1781062528995,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"153ms","userId":"-","msg":"POST /api/v1/auth/login 401 153ms"}
+{"level":40,"time":1781062529168,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"153ms","userId":"-","msg":"POST /api/v1/auth/login 401 153ms"}
+{"level":40,"time":1781062529190,"pid":497801,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":429,"duration":"2ms","userId":"-","msg":"POST /api/v1/auth/login 429 2ms"}
+{"level":40,"time":1781062529236,"pid":497801,"hostname":"Siapp","method":"GET","url":"/api/v1/incidents?page=1&limit=5","status":401,"duration":"2ms","userId":"-","msg":"GET /api/v1/incidents?page=1&limit=5 401 2ms"}
+{"level":30,"time":1781062529323,"pid":497801,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062537169,"pid":498114,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062537188,"pid":498114,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":40,"time":1781062538414,"pid":498114,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"206ms","userId":"-","msg":"POST /api/v1/auth/login 401 206ms"}
+{"level":30,"time":1781062550260,"pid":498114,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062586414,"pid":498584,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062586432,"pid":498584,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":40,"time":1781062588210,"pid":498584,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"204ms","userId":"-","msg":"POST /api/v1/auth/login 401 204ms"}
+{"level":40,"time":1781062588350,"pid":498584,"hostname":"Siapp","method":"GET","url":"/api/v1/auth/me","status":401,"duration":"3ms","userId":"-","msg":"GET /api/v1/auth/me 401 3ms"}
+{"level":40,"time":1781062588374,"pid":498584,"hostname":"Siapp","method":"GET","url":"/api/v1/dashboard/stats","status":401,"duration":"3ms","userId":"-","msg":"GET /api/v1/dashboard/stats 401 3ms"}
+{"level":40,"time":1781062588396,"pid":498584,"hostname":"Siapp","method":"POST","url":"/api/v1/incidents","status":401,"duration":"2ms","userId":"-","msg":"POST /api/v1/incidents 401 2ms"}
+{"level":40,"time":1781062588425,"pid":498584,"hostname":"Siapp","method":"GET","url":"/api/v1/incidents?page=1&limit=5","status":401,"duration":"2ms","userId":"-","msg":"GET /api/v1/incidents?page=1&limit=5 401 2ms"}
+{"level":40,"time":1781062588628,"pid":498584,"hostname":"Siapp","method":"PATCH","url":"/api/v1/incidents/undefined/grade","status":401,"duration":"2ms","userId":"-","msg":"PATCH /api/v1/incidents/undefined/grade 401 2ms"}
+{"level":40,"time":1781062588654,"pid":498584,"hostname":"Siapp","method":"GET","url":"/api/v1/investigations?incident_id=undefined","status":401,"duration":"5ms","userId":"-","msg":"GET /api/v1/investigations?incident_id=undefined 401 5ms"}
+{"level":40,"time":1781062588740,"pid":498584,"hostname":"Siapp","method":"PUT","url":"/api/v1/investigations/","status":404,"duration":"2ms","userId":"-","msg":"PUT /api/v1/investigations/ 404 2ms"}
+{"level":40,"time":1781062588765,"pid":498584,"hostname":"Siapp","method":"GET","url":"/api/v1/notifications/unread","status":404,"duration":"3ms","userId":"-","msg":"GET /api/v1/notifications/unread 404 3ms"}
+{"level":40,"time":1781062588787,"pid":498584,"hostname":"Siapp","method":"GET","url":"/api/v1/export/excel","status":401,"duration":"2ms","userId":"-","msg":"GET /api/v1/export/excel 401 2ms"}
+{"level":40,"time":1781062588807,"pid":498584,"hostname":"Siapp","method":"GET","url":"/api/v1/export/pdf","status":401,"duration":"1ms","userId":"-","msg":"GET /api/v1/export/pdf 401 1ms"}
+{"level":30,"time":1781062588847,"pid":498584,"hostname":"Siapp","method":"GET","url":"/dashboard","status":200,"duration":"6ms","userId":"-","msg":"GET /dashboard 200 6ms"}
+{"level":30,"time":1781062588850,"pid":498584,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062660900,"pid":499618,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062660917,"pid":499618,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781062662721,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"202ms","userId":"-","msg":"POST /api/v1/auth/login 200 202ms"}
+{"level":30,"time":1781062662934,"pid":499618,"hostname":"Siapp","method":"GET","url":"/api/v1/auth/me","status":200,"duration":"8ms","userId":"8fc18cac-9ff3-4ce3-8240-fe0dfdce8a1c","msg":"GET /api/v1/auth/me 200 8ms"}
+{"level":30,"time":1781062663025,"pid":499618,"hostname":"Siapp","method":"GET","url":"/api/v1/dashboard/stats","status":200,"duration":"11ms","userId":"8fc18cac-9ff3-4ce3-8240-fe0dfdce8a1c","msg":"GET /api/v1/dashboard/stats 200 11ms"}
+{"level":30,"time":1781062663255,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"154ms","userId":"-","msg":"POST /api/v1/auth/login 200 154ms"}
+{"level":30,"time":1781062663394,"pid":499618,"hostname":"Siapp","msg":"Notifications sent for incident 47f0c72e-4309-43b8-8f5c-067d8219ae0b to 3 users"}
+{"level":30,"time":1781062663395,"pid":499618,"hostname":"Siapp","incidentId":"47f0c72e-4309-43b8-8f5c-067d8219ae0b","reporter":"38eed891-72dc-4e33-a586-6cc5dae19296","msg":"Incident reported"}
+{"level":30,"time":1781062663399,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/incidents","status":201,"duration":"41ms","userId":"38eed891-72dc-4e33-a586-6cc5dae19296","msg":"POST /api/v1/incidents 201 41ms"}
+{"level":30,"time":1781062663664,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"154ms","userId":"-","msg":"POST /api/v1/auth/login 200 154ms"}
+{"level":30,"time":1781062663809,"pid":499618,"hostname":"Siapp","msg":"Incident 47f0c72e-4309-43b8-8f5c-067d8219ae0b graded as kuning, investigation type: komprehensif"}
+{"level":30,"time":1781062663810,"pid":499618,"hostname":"Siapp","incidentId":"47f0c72e-4309-43b8-8f5c-067d8219ae0b","severity":"kuning","by":"dcc57592-87a0-4824-b8e6-6972ee638a6b","msg":"Incident graded"}
+{"level":30,"time":1781062663814,"pid":499618,"hostname":"Siapp","method":"PATCH","url":"/api/v1/incidents/47f0c72e-4309-43b8-8f5c-067d8219ae0b/grade","status":200,"duration":"36ms","userId":"dcc57592-87a0-4824-b8e6-6972ee638a6b","msg":"PATCH /api/v1/incidents/47f0c72e-4309-43b8-8f5c-067d8219ae0b/grade 200 36ms"}
+{"level":30,"time":1781062663882,"pid":499618,"hostname":"Siapp","method":"GET","url":"/api/v1/investigations?incident_id=47f0c72e-4309-43b8-8f5c-067d8219ae0b","status":200,"duration":"7ms","userId":"dcc57592-87a0-4824-b8e6-6972ee638a6b","msg":"GET /api/v1/investigations?incident_id=47f0c72e-4309-43b8-8f5c-067d8219ae0b 200 7ms"}
+{"level":30,"time":1781062663969,"pid":499618,"hostname":"Siapp","investigationId":"ab985ad9-3ae1-490e-a039-8d3d31b68db6","incidentId":"47f0c72e-4309-43b8-8f5c-067d8219ae0b","msg":"Investigation completed"}
+{"level":30,"time":1781062663984,"pid":499618,"hostname":"Siapp","method":"PATCH","url":"/api/v1/investigations/ab985ad9-3ae1-490e-a039-8d3d31b68db6/complete","status":200,"duration":"25ms","userId":"dcc57592-87a0-4824-b8e6-6972ee638a6b","msg":"PATCH /api/v1/investigations/ab985ad9-3ae1-490e-a039-8d3d31b68db6/complete 200 25ms"}
+{"level":30,"time":1781062664053,"pid":499618,"hostname":"Siapp","method":"GET","url":"/api/v1/notifications","status":200,"duration":"6ms","userId":"38eed891-72dc-4e33-a586-6cc5dae19296","msg":"GET /api/v1/notifications 200 6ms"}
+{"level":30,"time":1781062664168,"pid":499618,"hostname":"Siapp","method":"GET","url":"/api/v1/export/excel","status":200,"duration":"30ms","userId":"8fc18cac-9ff3-4ce3-8240-fe0dfdce8a1c","msg":"GET /api/v1/export/excel 200 30ms"}
+{"level":30,"time":1781062664278,"pid":499618,"hostname":"Siapp","method":"GET","url":"/api/v1/export/pdf","status":200,"duration":"93ms","userId":"8fc18cac-9ff3-4ce3-8240-fe0dfdce8a1c","msg":"GET /api/v1/export/pdf 200 93ms"}
+{"level":40,"time":1781062664299,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":422,"duration":"6ms","userId":"-","msg":"POST /api/v1/auth/login 422 6ms"}
+{"level":40,"time":1781062664543,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"154ms","userId":"-","msg":"POST /api/v1/auth/login 401 154ms"}
+{"level":40,"time":1781062664715,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"153ms","userId":"-","msg":"POST /api/v1/auth/login 401 153ms"}
+{"level":40,"time":1781062664897,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"163ms","userId":"-","msg":"POST /api/v1/auth/login 401 163ms"}
+{"level":40,"time":1781062665084,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"167ms","userId":"-","msg":"POST /api/v1/auth/login 401 167ms"}
+{"level":40,"time":1781062665249,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"150ms","userId":"-","msg":"POST /api/v1/auth/login 401 150ms"}
+{"level":40,"time":1781062665417,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":401,"duration":"152ms","userId":"-","msg":"POST /api/v1/auth/login 401 152ms"}
+{"level":40,"time":1781062665433,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":429,"duration":"1ms","userId":"-","msg":"POST /api/v1/auth/login 429 1ms"}
+{"level":40,"time":1781062665451,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":429,"duration":"1ms","userId":"-","msg":"POST /api/v1/auth/login 429 1ms"}
+{"level":40,"time":1781062665468,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":429,"duration":"1ms","userId":"-","msg":"POST /api/v1/auth/login 429 1ms"}
+{"level":40,"time":1781062665489,"pid":499618,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":429,"duration":"1ms","userId":"-","msg":"POST /api/v1/auth/login 429 1ms"}
+{"level":30,"time":1781062665535,"pid":499618,"hostname":"Siapp","method":"GET","url":"/api/v1/docs/","status":200,"duration":"5ms","userId":"-","msg":"GET /api/v1/docs/ 200 5ms"}
+{"level":30,"time":1781062665559,"pid":499618,"hostname":"Siapp","method":"GET","url":"/dashboard","status":200,"duration":"5ms","userId":"-","msg":"GET /dashboard 200 5ms"}
+{"level":30,"time":1781062665581,"pid":499618,"hostname":"Siapp","method":"GET","url":"/incidents","status":200,"duration":"4ms","userId":"-","msg":"GET /incidents 200 4ms"}
+{"level":30,"time":1781062665586,"pid":499618,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062675149,"pid":499968,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062675166,"pid":499968,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781062677001,"pid":499968,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"217ms","userId":"-","msg":"POST /api/v1/auth/login 200 217ms"}
+{"level":30,"time":1781062677058,"pid":499968,"hostname":"Siapp","method":"GET","url":"/api/v1/notifications","status":200,"duration":"16ms","userId":"8fc18cac-9ff3-4ce3-8240-fe0dfdce8a1c","msg":"GET /api/v1/notifications 200 16ms"}
+{"level":30,"time":1781062677290,"pid":499968,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"160ms","userId":"-","msg":"POST /api/v1/auth/login 200 160ms"}
+{"level":30,"time":1781062677332,"pid":499968,"hostname":"Siapp","method":"GET","url":"/api/v1/notifications","status":200,"duration":"4ms","userId":"38eed891-72dc-4e33-a586-6cc5dae19296","msg":"GET /api/v1/notifications 200 4ms"}
+{"level":30,"time":1781062677406,"pid":499968,"hostname":"Siapp","msg":"Shutting down gracefully..."}
+{"level":30,"time":1781062717882,"pid":500564,"hostname":"Siapp","msg":"Database connected"}
+{"level":30,"time":1781062717899,"pid":500564,"hostname":"Siapp","msg":"SI-API server running on 0.0.0.0:3000 (production)"}
+{"level":30,"time":1781062719708,"pid":500564,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"218ms","userId":"-","msg":"POST /api/v1/auth/login 200 218ms"}
+{"level":30,"time":1781062719798,"pid":500564,"hostname":"Siapp","msg":"Notifications sent for incident d81993bd-9af3-47a9-bce0-657b59dc0d89 to 3 users"}
+{"level":30,"time":1781062719799,"pid":500564,"hostname":"Siapp","incidentId":"d81993bd-9af3-47a9-bce0-657b59dc0d89","reporter":"17e26d69-bcd9-4f47-94c7-f2a8a903c054","msg":"Incident reported"}
+{"level":30,"time":1781062719812,"pid":500564,"hostname":"Siapp","method":"POST","url":"/api/v1/incidents","status":201,"duration":"68ms","userId":"17e26d69-bcd9-4f47-94c7-f2a8a903c054","msg":"POST /api/v1/incidents 201 68ms"}
+{"level":30,"time":1781062719990,"pid":500564,"hostname":"Siapp","method":"POST","url":"/api/v1/auth/login","status":200,"duration":"157ms","userId":"-","msg":"POST /api/v1/auth/login 200 157ms"}
+{"level":30,"time":1781062720037,"pid":500564,"hostname":"Siapp","method":"GET","url":"/api/v1/notifications","status":200,"duration":"8ms","userId":"7f301a7b-73c6-492e-a564-a85037520d40","msg":"GET /api/v1/notifications 200 8ms"}
+{"level":30,"time":1781062720101,"pid":500564,"hostname":"Siapp","msg":"Shutting down gracefully..."}
