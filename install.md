@@ -125,14 +125,20 @@ npm run build
 cd ..
 ```
 
-**Langkah 5: Inisialisasi database**
+**Langkah 5: Siapkan direktori upload**
+
+```bash
+mkdir -p /opt/si-api/uploads
+```
+
+**Langkah 6: Inisialisasi database**
 
 ```bash
 node src/config/migrate.js
 node src/config/seed.js
 ```
 
-**Langkah 6: Jalankan**
+**Langkah 7: Jalankan**
 
 ```bash
 node src/index.js
@@ -272,19 +278,20 @@ sudo certbot --nginx -d si-api.rsusoedjono.local
 
 ## 4. Backup & Restore
 
-### Backup Database
+### Backup Database & Uploads
 
 ```bash
 # Cron harian
 sudo crontab -e
 # Tambahkan:
-0 2 * * * cp /opt/si-api/data/si-api.db /opt/si-api/backups/si-api-$(date +\%Y\%m\%d).db
+0 2 * * * cp /opt/si-api/data/si-api.db /opt/si-api/backups/si-api-$(date +\%Y\%m\%d).db && cp -r /opt/si-api/uploads /opt/si-api/backups/uploads-$(date +\%Y\%m\%d)
 ```
 
 ### Restore Database
 
 ```bash
 cp /opt/si-api/backups/si-api-20260610.db /opt/si-api/data/si-api.db
+cp -r /opt/si-api/backups/uploads-20260610/* /opt/si-api/uploads/
 sudo systemctl restart si-api
 # atau: docker compose restart
 ```
