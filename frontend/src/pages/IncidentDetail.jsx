@@ -75,8 +75,6 @@ export default function IncidentDetail() {
   const canUpdateStatus = ['pmkp', 'validator', 'admin'].includes(user.role);
   const canExport = ['pmkp', 'manajemen', 'admin', 'kepala_unit'].includes(user.role);
 
-  const gradeAutoColor = { BIRU: '#3B82F6', HIJAU: '#10B981', KUNING: '#F59E0B', ORANYE: '#F97316', MERAH: '#EF4444' };
-
   return (
     <div className="page">
       <div className="page-header">
@@ -96,49 +94,33 @@ export default function IncidentDetail() {
               ? <span className={severityTags[incident.severity]}>{incident.severity.toUpperCase()}</span>
               : <span className="tag tag-default">Belum di-grade</span>}
           </DetailRow>
-          <DetailRow label="Grade Otomatis">
-            {incident.grade_otomatis
-              ? <span style={{ padding: '2px 10px', borderRadius: 4, fontWeight: 600, background: `${gradeAutoColor[incident.grade_otomatis]}15`, color: gradeAutoColor[incident.grade_otomatis] }}>{incident.grade_otomatis}</span>
-              : <span className="tag tag-default">-</span>}
-          </DetailRow>
           <DetailRow label="Pelapor">{incident.reporter_name} ({incident.reporter_unit})</DetailRow>
 
           <hr style={{ margin: '1rem 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
 
-          <h3 style={{ marginBottom: '0.75rem', fontSize: '.95rem', color: '#475569' }}>I. Data Pasien</h3>
+          <h3 style={{ marginBottom: '0.75rem', fontSize: '.95rem', color: '#475569' }}>Data Pasien</h3>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem', marginBottom: '1rem' }}>
             <DetailRow label="No. RM">{incident.no_rm}</DetailRow>
             <DetailRow label="Umur">{incident.umur}</DetailRow>
             <DetailRow label="Jenis Kelamin">{incident.jenis_kelamin}</DetailRow>
             <DetailRow label="Penanggung Biaya">{incident.penanggung_biaya}</DetailRow>
           </div>
-          <DetailRow label="Tanggal Masuk RS">{incident.tgl_masuk_rs} {incident.jam_masuk_rs}</DetailRow>
+          {incident.tgl_masuk_rs && <DetailRow label="Tanggal Masuk RS">{incident.tgl_masuk_rs} {incident.jam_masuk_rs}</DetailRow>}
 
-          <hr style={{ margin: '1rem 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
+          <DetailSection title="Akibat Insiden">{incident.akibat_insiden}</DetailSection>
 
-          <h3 style={{ marginBottom: '0.75rem', fontSize: '.95rem', color: '#475569' }}>III. Penilaian Risiko (PMKP)</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
-            <DetailRow label="Probabilitas">{incident.probabilitas || '-'}</DetailRow>
-            <DetailRow label="Dampak">{incident.dampak || '-'}</DetailRow>
-            <DetailRow label="Grade">{incident.grade_otomatis || '-'}</DetailRow>
-          </div>
-
-          <DetailSection title="IV. Akibat Insiden">{incident.akibat_insiden}</DetailSection>
-
-          <DetailSection title="V. Tindakan Awal">
+          <DetailSection title="Tindakan Awal">
             {incident.tindakan_awal && <p>{incident.tindakan_awal}</p>}
             {incident.tindakan_oleh && <p style={{ color: '#64748b', fontSize: '.85rem' }}>Dilakukan oleh: {incident.tindakan_oleh}</p>}
           </DetailSection>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <DetailSection title="VI. Riwayat Serupa">
-              {incident.pernah_terjadi === 'Ya' ? (
-                <>Pernah terjadi. {incident.pencegahan_ulang && <span>Pencegahan: {incident.pencegahan_ulang}</span>}</>
-              ) : 'Tidak pernah terjadi sebelumnya'}
-            </DetailSection>
-          </div>
+          <DetailSection title="Riwayat Serupa">
+            {incident.pernah_terjadi === 'Ya' ? (
+              <>Pernah terjadi. {incident.pencegahan_ulang && <span>Pencegahan: {incident.pencegahan_ulang}</span>}</>
+            ) : 'Tidak pernah terjadi sebelumnya'}
+          </DetailSection>
 
-          <DetailSection title="VII. Kronologi">
+          <DetailSection title="Kronologi">
             <p>{incident.description}</p>
           </DetailSection>
 
