@@ -137,6 +137,27 @@ const migrations = [
       INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_name', 'RSUD dr. R. Soedjono Selong');
       INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_logo', '/logo.png');
     `
+  },
+  {
+    name: '011_add_incident_detail_fields',
+    multi: true,
+    sql: `
+      ALTER TABLE incidents ADD COLUMN no_rm TEXT;
+      ALTER TABLE incidents ADD COLUMN umur INTEGER;
+      ALTER TABLE incidents ADD COLUMN jenis_kelamin TEXT;
+      ALTER TABLE incidents ADD COLUMN penanggung_biaya TEXT;
+      ALTER TABLE incidents ADD COLUMN tgl_masuk_rs TEXT;
+      ALTER TABLE incidents ADD COLUMN jam_masuk_rs TEXT;
+      ALTER TABLE incidents ADD COLUMN ruangan_id TEXT;
+      ALTER TABLE incidents ADD COLUMN probabilitas INTEGER;
+      ALTER TABLE incidents ADD COLUMN dampak INTEGER;
+      ALTER TABLE incidents ADD COLUMN grade_otomatis TEXT;
+      ALTER TABLE incidents ADD COLUMN akibat_insiden TEXT;
+      ALTER TABLE incidents ADD COLUMN tindakan_awal TEXT;
+      ALTER TABLE incidents ADD COLUMN tindakan_oleh TEXT;
+      ALTER TABLE incidents ADD COLUMN pernah_terjadi TEXT DEFAULT 'Tidak';
+      ALTER TABLE incidents ADD COLUMN pencegahan_ulang TEXT;
+    `
   }
 ];
 
