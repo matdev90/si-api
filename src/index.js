@@ -75,18 +75,16 @@ app.use(errorHandler);
 
 async function start() {
   try {
+    const { execSync } = require('node:child_process');
+    try {
+      execSync(`node ${path.resolve(__dirname, 'config/migrate.js')}`, { stdio: 'pipe' });
+      logger.info('Auto-migration completed');
+    } catch {
+      logger.warn('Migration skipped or failed (non-fatal)');
+    }
+
     await getDatabase();
     logger.info('Database connected');
-
-    if (process.env.NODE_ENV !== 'production') {
-      const { execSync } = require('node:child_process');
-      try {
-        execSync('node src/config/migrate.js', { stdio: 'pipe' });
-        logger.info('Auto-migration completed');
-      } catch {
-        logger.warn('Migration skipped or failed (non-fatal)');
-      }
-    }
 
     const HOST = process.env.HOST || '0.0.0.0';
     app.listen(PORT, HOST, () => {
