@@ -13,6 +13,7 @@ import Notifications from './pages/Notifications';
 import MasterRuangan from './pages/MasterRuangan';
 import MasterUsers from './pages/MasterUsers';
 import Laporan from './pages/Laporan';
+import ChangePassword from './pages/ChangePassword';
 import NotFound from './pages/NotFound';
 import './App.css';
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/master/ruangan" element={<ProtectedRoute roles={['admin']}><Layout><MasterRuangan /></Layout></ProtectedRoute>} />
           <Route path="/master/users" element={<ProtectedRoute roles={['admin']}><Layout><MasterUsers /></Layout></ProtectedRoute>} />
           <Route path="/laporan" element={<ProtectedRoute roles={['admin', 'pmkp', 'manajemen', 'validator', 'kepala_unit']}><Layout><Laporan /></Layout></ProtectedRoute>} />
+          <Route path="/password" element={<ProtectedRoute><Layout><ChangePassword /></Layout></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
