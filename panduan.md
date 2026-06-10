@@ -14,11 +14,12 @@
 5. [Role PMKP — Investigasi & Analisa](#5-role-pmkp)
 6. [Role Kepala Unit — Monitoring Unit](#6-role-kepala-unit)
 7. [Role Manajemen — Overview RS](#7-role-manajemen)
-8. [Role Admin — Manajemen User](#8-role-admin)
-9. [Notifikasi](#9-notifikasi)
-10. [Export Laporan](#10-export-laporan)
-11. [Alur Lengkap Insiden](#11-alur-lengkap-insiden)
-12. [FAQ](#12-faq)
+8. [Role Admin — Manajemen User & Pengaturan](#8-role-admin)
+9. [Ganti Password](#9-ganti-password)
+10. [Notifikasi](#10-notifikasi)
+11. [Export Laporan](#11-export-laporan)
+12. [Alur Lengkap Insiden](#12-alur-lengkap-insiden)
+13. [FAQ](#13-faq)
 
 ---
 
@@ -40,7 +41,7 @@ Buka browser dan akses:
 | **Username** | Nama pengguna yang diberikan admin |
 | **Password** | Password awal (default: `12345`) |
 
-> **Password awal HARUS diganti** oleh admin setelah login pertama.
+> **Password awal HARUS diganti** setelah login pertama. Banner notifikasi kuning akan muncul — klik untuk mengganti password.
 
 ### 1.3 Data User Default (Seed)
 
@@ -278,26 +279,17 @@ Admin mengelola user dan dapat melakukan semua fungsi.
 | Investigasi | ✅ |
 | Notifikasi | ✅ |
 | Export | ✅ |
-| Register User | ✅ (via API) |
+| Ruangan | ✅ (CRUD master ruangan) |
+| Pengguna | ✅ (CRUD user via UI) |
+| Pengaturan | ✅ (nama RS & logo) |
+| Ganti Password | ✅ |
 
-### 8.2 Registrasi User Baru
+### 8.2 Manajemen User Via UI
 
-Registrasi user baru dilakukan via API:
-
-```bash
-curl -X POST http://192.168.90.7:3000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token-admin>" \
-  -d '{
-    "username": "perawat2",
-    "password": "12345",
-    "name": "Perawat Dua",
-    "role": "pelapor",
-    "unit": "Rawat Inap"
-  }'
-```
-
-> **Catatan**: Fitur registrasi user via UI belum tersedia. Gunakan API atau direct database.
+1. Buka menu **Pengguna**
+2. Daftar semua user ditampilkan dengan role dan unit
+3. Klik **Tambah User** untuk user baru
+4. Edit atau nonaktifkan user yang sudah ada
 
 ### 8.3 Manajemen Role
 
@@ -312,9 +304,49 @@ Role yang tersedia:
 | Manajemen | `manajemen` | Direksi/manajemen RS |
 | Admin | `admin` | Administrator sistem |
 
+### 8.4 Pengaturan Aplikasi
+
+1. Buka menu **Pengaturan** (⚙️)
+2. **Nama Rumah Sakit**: Edit nama RS yang tampil di laporan
+3. **Logo Rumah Sakit**: Upload logo baru (PNG/JPG/SVG, max 2MB)
+
+Perubahan langsung tersimpan dan tampil di semua halaman.
+
 ---
 
-## 9. Notifikasi
+## 9. Ganti Password
+
+Semua user bisa mengganti password sendiri melalui UI.
+
+### 9.1 Cara Ganti Password
+
+1. Klik menu **Ganti Password** (🔑) di sidebar (bawah)
+2. Isi form:
+   - **Password Saat Ini**: Password lama
+   - **Password Baru**: Minimal 4 karakter
+   - **Konfirmasi Password Baru**: Ketik ulang
+3. Klik **Simpan Password**
+4. Password langsung berubah, login selanjutnya pakai password baru
+
+### 9.2 Notifikasi Password Default
+
+Saat pertama login dengan password default (`12345`), akan muncul banner kuning:
+> "Anda menggunakan password default. Segera ganti password Anda."
+
+Klik banner atau menu **Ganti Password** untuk mengganti. Banner akan hilang setelah password diubah.
+
+### 9.3 Via API
+
+```bash
+curl -X PATCH http://192.168.90.7:3000/api/v1/auth/password \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{"oldPassword":"12345","newPassword":"password-baru"}'
+```
+
+---
+
+## 10. Notifikasi
 
 ### 9.1 Kapan Notifikasi Terkirim
 
@@ -332,7 +364,7 @@ Role yang tersedia:
 
 ---
 
-## 10. Export Laporan
+## 11. Export Laporan
 
 ### 10.1 Yang Bisa Export
 
@@ -368,7 +400,7 @@ curl -X GET "http://192.168.90.7:3000/api/v1/export/pdf?start_date=2026-01-01&en
 
 ---
 
-## 11. Alur Lengkap Insiden
+## 12. Alur Lengkap Insiden
 
 ### Diagram Alur
 
@@ -418,7 +450,7 @@ Pelapor                  Validator                PMKP
 
 ---
 
-## 12. FAQ
+## 13. FAQ
 
 ### Q: Password lupa, bagaimana?
 
@@ -452,13 +484,4 @@ Ya. UI responsif dan bisa diakses dari browser smartphone dalam jaringan yang sa
 
 Rate limit: 200 request per 15 menit (global), 10 percobaan login per 15 menit. Tunggu beberapa saat.
 
-### Q: Cara ganti password?
 
-Saat ini via API:
-```bash
-curl -X PATCH http://192.168.90.7:3000/api/v1/auth/password \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
-  -d '{"old_password":"12345","new_password":"password-baru"}'
-```
-> Fitur ganti password via UI akan ditambahkan di versi mendatang.
