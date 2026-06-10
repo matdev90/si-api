@@ -92,6 +92,11 @@ const createUserSchema = z.object({
   unit: z.string().min(1).max(100),
 });
 
+const changePasswordSchema = z.object({
+  oldPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(4, 'New password must be at least 4 characters').max(100),
+});
+
 const updateUserSchema = z.object({
   username: z.string().min(3).max(50).optional(),
   password: z.string().min(4).max(100).optional(),
@@ -113,4 +118,5 @@ module.exports = {
   ruanganSchema,
   createUserSchema,
   updateUserSchema,
+  changePasswordSchema,
 };
