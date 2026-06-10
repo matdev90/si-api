@@ -2,7 +2,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 
-const { getDatabase, execute, query } = require('./database');
+const { getDatabase, execute, executeMulti, query } = require('./database');
 
 const migrations = [
   {
@@ -128,6 +128,12 @@ const migrations = [
         value TEXT,
         updated_at TEXT DEFAULT (datetime('now'))
       );
+    `
+  },
+  {
+    name: '010_seed_settings_defaults',
+    multi: true,
+    sql: `
       INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_name', 'RSUD dr. R. Soedjono Selong');
       INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_logo', '/logo.png');
     `
@@ -146,7 +152,11 @@ async function runMigrations() {
   for (const migration of migrations) {
     const existing = query(`SELECT id FROM migrations WHERE name = ?`, [migration.name]);
     if (existing.length === 0) {
-      execute(migration.sql);
+      if (migration.multi) {
+        executeMulti(migration.sql);
+      } else {
+        execute(migration.sql);
+      }
       execute(`INSERT INTO migrations (name) VALUES (?)`, [migration.name]);
       console.log(`Migrated: ${migration.name}`);
     } else {
