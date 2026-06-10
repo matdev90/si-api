@@ -8,6 +8,7 @@ const exportRoutes = require('./export');
 const notificationRoutes = require('./notifications');
 const masterRoutes = require('./master');
 const laporanRoutes = require('./laporan');
+const settingsRoutes = require('./settings');
 const swaggerSpec = require('../config/swagger');
 
 const router = Router();
@@ -25,6 +26,7 @@ router.use('/export', exportRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/master', masterRoutes);
 router.use('/laporan', laporanRoutes);
+router.use('/settings', settingsRoutes);
 
 router.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
