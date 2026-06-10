@@ -40,10 +40,18 @@ const Incident = {
     return rows[0] || null;
   },
 
-  create({ id, reporter_id, is_anonymous, incident_type, incident_date, incident_time, location, description, consequence, immediate_action, attachments }) {
-    execute(`INSERT INTO incidents (id, reporter_id, is_anonymous, incident_type, incident_date, incident_time, location, description, consequence, immediate_action, attachments)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [id, reporter_id, is_anonymous ? 1 : 0, incident_type, incident_date, incident_time, location, description, consequence, immediate_action, attachments]);
+  create({ id, reporter_id, is_anonymous, incident_type, incident_date, incident_time, location, description, consequence, immediate_action, attachments,
+    no_rm, umur, jenis_kelamin, penanggung_biaya, tgl_masuk_rs, jam_masuk_rs, ruangan_id,
+    probabilitas, dampak, grade_otomatis, akibat_insiden, tindakan_awal, tindakan_oleh, pernah_terjadi, pencegahan_ulang }) {
+    execute(`INSERT INTO incidents (id, reporter_id, is_anonymous, incident_type, incident_date, incident_time, location, description, consequence, immediate_action, attachments,
+      no_rm, umur, jenis_kelamin, penanggung_biaya, tgl_masuk_rs, jam_masuk_rs, ruangan_id,
+      probabilitas, dampak, grade_otomatis, akibat_insiden, tindakan_awal, tindakan_oleh, pernah_terjadi, pencegahan_ulang)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?,
+        ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, reporter_id, is_anonymous ? 1 : 0, incident_type, incident_date, incident_time, location, description, consequence, immediate_action, attachments,
+        no_rm || null, umur || null, jenis_kelamin || null, penanggung_biaya || null, tgl_masuk_rs || null, jam_masuk_rs || null, ruangan_id || null,
+        probabilitas || null, dampak || null, grade_otomatis || null, akibat_insiden || null, tindakan_awal || null, tindakan_oleh || null, pernah_terjadi || 'Tidak', pencegahan_ulang || null]);
     return { id, incident_type, incident_date, status: 'dilaporkan', description };
   },
 
