@@ -168,4 +168,28 @@ export function exportLaporanPDF(params = {}) {
   });
 }
 
+// ===== Settings =====
+export function getSettings() {
+  return request('GET', '/settings');
+}
+
+export function updateSettings(data) {
+  return request('PUT', '/settings', data);
+}
+
+export function uploadLogo(file) {
+  const formData = new FormData();
+  formData.append('logo', file);
+  const token = getToken();
+  return fetch(`${BASE}/settings/logo`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  }).then(async res => {
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Upload failed');
+    return data;
+  });
+}
+
 export { getToken, setToken, clearToken };
