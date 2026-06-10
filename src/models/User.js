@@ -6,7 +6,12 @@ const User = {
   },
 
   findById(id) {
-    const rows = query(`SELECT id, username, name, role, unit, is_active, created_at FROM users WHERE id = ?`, [id]);
+    const rows = query(`SELECT id, username, name, role, unit, is_active, created_at, must_change_password FROM users WHERE id = ?`, [id]);
+    return rows[0] || null;
+  },
+
+  findByIdWithPassword(id) {
+    const rows = query(`SELECT * FROM users WHERE id = ?`, [id]);
     return rows[0] || null;
   },
 
