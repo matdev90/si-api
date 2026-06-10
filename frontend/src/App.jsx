@@ -10,6 +10,9 @@ import IncidentDetail from './pages/IncidentDetail';
 import Investigations from './pages/Investigations';
 import InvestigationDetail from './pages/InvestigationDetail';
 import Notifications from './pages/Notifications';
+import MasterRuangan from './pages/MasterRuangan';
+import MasterUsers from './pages/MasterUsers';
+import Laporan from './pages/Laporan';
 import NotFound from './pages/NotFound';
 import './App.css';
 
@@ -27,6 +30,9 @@ function App() {
           <Route path="/investigations" element={<ProtectedRoute roles={['validator', 'pmkp', 'admin']}><Layout><Investigations /></Layout></ProtectedRoute>} />
           <Route path="/investigations/:id" element={<ProtectedRoute roles={['validator', 'pmkp', 'admin']}><Layout><InvestigationDetail /></Layout></ProtectedRoute>} />
           <Route path="/notifications" element={<ProtectedRoute><Layout><Notifications /></Layout></ProtectedRoute>} />
+          <Route path="/master/ruangan" element={<ProtectedRoute roles={['admin']}><Layout><MasterRuangan /></Layout></ProtectedRoute>} />
+          <Route path="/master/users" element={<ProtectedRoute roles={['admin']}><Layout><MasterUsers /></Layout></ProtectedRoute>} />
+          <Route path="/laporan" element={<ProtectedRoute roles={['admin', 'pmkp', 'manajemen', 'validator', 'kepala_unit']}><Layout><Laporan /></Layout></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
