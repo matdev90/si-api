@@ -23,7 +23,7 @@ async function seed() {
     if (existing.length === 0) {
       const id = uuidv4();
       const password = await bcrypt.hash(user.password, 10);
-      execute(`INSERT INTO users (id, username, password, name, role, unit) VALUES (?, ?, ?, ?, ?, ?)`,
+      execute(`INSERT INTO users (id, username, password, name, role, unit, must_change_password) VALUES (?, ?, ?, ?, ?, ?, 1)`,
         [id, user.username, password, user.name, user.role, user.unit]);
       console.log(`Seeded user: ${user.username} (${user.role})`);
     }
