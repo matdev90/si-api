@@ -18,7 +18,7 @@ export default function Login() {
     setLoading(true);
     try {
       const res = await api.login(username, password);
-      login(res.token, res.user);
+      login(res.token, res.user, res.mustChangePassword);
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);
