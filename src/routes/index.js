@@ -6,6 +6,8 @@ const dashboardRoutes = require('./dashboard');
 const investigationRoutes = require('./investigations');
 const exportRoutes = require('./export');
 const notificationRoutes = require('./notifications');
+const masterRoutes = require('./master');
+const laporanRoutes = require('./laporan');
 const swaggerSpec = require('../config/swagger');
 
 const router = Router();
@@ -21,6 +23,8 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/investigations', investigationRoutes);
 router.use('/export', exportRoutes);
 router.use('/notifications', notificationRoutes);
+router.use('/master', masterRoutes);
+router.use('/laporan', laporanRoutes);
 
 router.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
