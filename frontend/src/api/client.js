@@ -48,6 +48,10 @@ export function getMe() {
   return request('GET', '/auth/me');
 }
 
+export function changePassword(oldPassword, newPassword) {
+  return request('PATCH', '/auth/password', { oldPassword, newPassword });
+}
+
 export function getIncidents(params = {}) {
   const q = new URLSearchParams(params).toString();
   return request('GET', `/incidents${q ? '?' + q : ''}`);
