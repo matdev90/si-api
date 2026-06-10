@@ -119,6 +119,18 @@ const migrations = [
     sql: `
       UPDATE users SET must_change_password = 1 WHERE password IS NOT NULL;
     `
+  },
+  {
+    name: '009_create_settings',
+    sql: `
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT,
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_name', 'RSUD dr. R. Soedjono Selong');
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_logo', '/logo.png');
+    `
   }
 ];
 
