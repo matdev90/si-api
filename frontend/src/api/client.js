@@ -111,4 +111,57 @@ export function health() {
   return request('GET', '/health');
 }
 
+// ===== Master Data =====
+export function getRuangan() {
+  return request('GET', '/master/ruangan');
+}
+
+export function createRuangan(data) {
+  return request('POST', '/master/ruangan', data);
+}
+
+export function updateRuangan(id, data) {
+  return request('PATCH', `/master/ruangan/${id}`, data);
+}
+
+export function deleteRuangan(id) {
+  return request('DELETE', `/master/ruangan/${id}`);
+}
+
+export function getUsers() {
+  return request('GET', '/master/users');
+}
+
+export function createUser(data) {
+  return request('POST', '/master/users', data);
+}
+
+export function updateUser(id, data) {
+  return request('PATCH', `/master/users/${id}`, data);
+}
+
+export function deleteUser(id) {
+  return request('DELETE', `/master/users/${id}`);
+}
+
+// ===== Laporan =====
+export function getLaporan(params = {}) {
+  const q = new URLSearchParams(params).toString();
+  return request('GET', `/laporan${q ? '?' + q : ''}`);
+}
+
+export function exportLaporanExcel(params = {}) {
+  const q = new URLSearchParams(params).toString();
+  return fetch(`${BASE}/laporan/export/excel${q ? '?' + q : ''}`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
+  });
+}
+
+export function exportLaporanPDF(params = {}) {
+  const q = new URLSearchParams(params).toString();
+  return fetch(`${BASE}/laporan/export/pdf${q ? '?' + q : ''}`, {
+    headers: { Authorization: `Bearer ${getToken()}` },
+  });
+}
+
 export { getToken, setToken, clearToken };
