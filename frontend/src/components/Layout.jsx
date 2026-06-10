@@ -42,6 +42,7 @@ const roleMenus = {
     { to: '/laporan', label: 'Laporan', icon: '📑' },
     { to: '/master/ruangan', label: 'Ruangan', icon: '🏥' },
     { to: '/master/users', label: 'Pengguna', icon: '👥' },
+    { to: '/settings', label: 'Pengaturan', icon: '⚙️' },
     { to: '/notifications', label: 'Notifikasi', icon: '🔔' },
   ],
 };
