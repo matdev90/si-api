@@ -61,4 +61,9 @@ function execute(sql, params = []) {
   saveDatabase();
 }
 
-module.exports = { getDatabase, saveDatabase, closeDatabase, query, execute };
+function executeMulti(sql) {
+  db.exec(sql);
+  saveDatabase();
+}
+
+module.exports = { getDatabase, saveDatabase, closeDatabase, query, execute, executeMulti };
