@@ -39,7 +39,7 @@ export default function InvestigationDetail() {
     } catch (err) { setError(err.message); }
   };
 
-  if (loading) return <div className="page"><p>Memuat...</p></div>;
+  if (loading) return <div className="page loading"><div className="spinner" /><p>Memuat...</p></div>;
   if (error) return <div className="page"><div className="alert alert-error">{error}</div></div>;
   if (!investigation) return <div className="page"><p>Investigasi tidak ditemukan</p></div>;
 
