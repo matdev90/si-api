@@ -2,11 +2,11 @@ const { query, execute } = require('../config/database');
 
 const User = {
   findAll() {
-    return query(`SELECT id, username, name, role, unit, is_active, created_at FROM users ORDER BY created_at DESC`);
+    return query(`SELECT u.id, u.username, u.name, u.role, u.unit, COALESCE(r.name, u.unit) as current_unit, u.ruangan_id, u.is_active, u.created_at FROM users u LEFT JOIN ruangan r ON u.ruangan_id = r.id ORDER BY u.created_at DESC`);
   },
 
   findById(id) {
-    const rows = query(`SELECT id, username, name, role, unit, is_active, created_at, must_change_password FROM users WHERE id = ?`, [id]);
+    const rows = query(`SELECT u.id, u.username, u.name, u.role, u.unit, COALESCE(r.name, u.unit) as current_unit, u.ruangan_id, u.is_active, u.created_at, u.must_change_password FROM users u LEFT JOIN ruangan r ON u.ruangan_id = r.id WHERE u.id = ?`, [id]);
     return rows[0] || null;
   },
 
@@ -16,14 +16,14 @@ const User = {
   },
 
   findByUsername(username) {
-    const rows = query(`SELECT * FROM users WHERE username = ?`, [username]);
+    const rows = query(`SELECT u.*, COALESCE(r.name, u.unit) as current_unit FROM users u LEFT JOIN ruangan r ON u.ruangan_id = r.id WHERE u.username = ?`, [username]);
     return rows[0] || null;
   },
 
-  create({ id, username, password, name, role, unit }) {
-    execute(`INSERT INTO users (id, username, password, name, role, unit) VALUES (?, ?, ?, ?, ?, ?)`,
-      [id, username, password, name, role, unit]);
-    return { id, username, name, role, unit };
+  create({ id, username, password, name, role, unit, ruangan_id }) {
+    execute(`INSERT INTO users (id, username, password, name, role, unit, ruangan_id) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [id, username, password, name, role, unit, ruangan_id || null]);
+    return { id, username, name, role, unit, ruangan_id };
   },
 
   update(id, fields) {

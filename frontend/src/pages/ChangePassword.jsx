@@ -2,41 +2,40 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api/client';
+import NotificationModal from '../components/NotificationModal';
 
 export default function ChangePassword() {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [notif, setNotif] = useState({ message: '', type: '' });
   const { user, checkPasswordChange } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setNotif({ message: '', type: '' });
     if (!oldPassword || !newPassword || !confirmPassword) {
-      setError('Semua field wajib diisi'); return;
+      setNotif({ message: 'Semua field wajib diisi', type: 'error' }); return;
     }
     if (newPassword.length < 4) {
-      setError('Password baru minimal 4 karakter'); return;
+      setNotif({ message: 'Password baru minimal 4 karakter', type: 'error' }); return;
     }
     if (newPassword !== confirmPassword) {
-      setError('Konfirmasi password tidak cocok'); return;
+      setNotif({ message: 'Konfirmasi password tidak cocok', type: 'error' }); return;
     }
     if (oldPassword === newPassword) {
-      setError('Password baru tidak boleh sama dengan password lama'); return;
+      setNotif({ message: 'Password baru tidak boleh sama dengan password lama', type: 'error' }); return;
     }
     setLoading(true);
     try {
       await api.changePassword(oldPassword, newPassword);
-      setSuccess('Password berhasil diubah');
+      setNotif({ message: 'Password berhasil diubah', type: 'success' });
       checkPasswordChange();
       setTimeout(() => navigate('/dashboard'), 1500);
     } catch (err) {
-      setError(err.message);
+      setNotif({ message: err.message, type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -50,8 +49,6 @@ export default function ChangePassword() {
       </div>
       <div className="card" style={{ maxWidth: 500, margin: '0 auto' }}>
         <form onSubmit={handleSubmit}>
-          {error && <div className="alert alert-error">{error}</div>}
-          {success && <div className="alert alert-success">{success}</div>}
           <div className="form-group">
             <label>Password Saat Ini</label>
             <input type="password" value={oldPassword} onChange={e => setOldPassword(e.target.value)} autoFocus />
@@ -69,6 +66,9 @@ export default function ChangePassword() {
           </button>
         </form>
       </div>
+
+      <NotificationModal message={notif.message} type={notif.type}
+        onClose={() => setNotif({ message: '', type: '' })} />
     </div>
   );
 }

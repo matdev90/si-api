@@ -19,11 +19,18 @@ const upload = multer({
 });
 
 const updateSettingsSchema = z.object({
-  hospital_name: z.string().min(2).max(200),
+  hospital_name: z.string().min(2).max(200).optional(),
+  hospital_ownership: z.string().max(50).optional(),
+  hospital_type: z.string().max(50).optional(),
+  hospital_class: z.string().max(10).optional(),
+  hospital_bed_capacity: z.string().max(10).optional(),
+  hospital_province: z.string().max(50).optional(),
+  hospital_code: z.string().max(20).optional(),
 });
 
 const router = Router();
 
+router.get('/public', getSettings);
 router.get('/', authenticate, getSettings);
 router.put('/', authenticate, authorize('admin'), validate(updateSettingsSchema), updateSettings);
 router.post('/logo', authenticate, authorize('admin'), upload.single('logo'), uploadLogo);

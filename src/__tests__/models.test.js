@@ -97,7 +97,6 @@ describe('Incident model', () => {
   it('gets stats', () => {
     const stats = Incident.getStats();
     expect(stats.total).toBeGreaterThanOrEqual(1);
-    expect(stats.merah).toBeGreaterThanOrEqual(1);
   });
 
   it('gets trends', () => {

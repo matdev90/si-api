@@ -66,11 +66,11 @@ const masterController = {
 
   async createUser(req, res, next) {
     try {
-      const { username, password, name, role, unit } = req.validated;
+      const { username, password, name, role, unit, ruangan_id } = req.validated;
       const existing = User.findByUsername(username);
       if (existing) return res.status(409).json({ error: 'Username sudah digunakan' });
       const hashed = await bcrypt.hash(password, 10);
-      const user = User.create({ id: uuidv4(), username, password: hashed, name, role, unit });
+      const user = User.create({ id: uuidv4(), username, password: hashed, name, role, unit, ruangan_id });
       res.status(201).json(user);
     } catch (err) { next(err); }
   },

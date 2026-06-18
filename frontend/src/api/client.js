@@ -61,6 +61,10 @@ export function getIncident(id) {
   return request('GET', `/incidents/${id}`);
 }
 
+export function deleteIncident(id) {
+  return request('DELETE', `/incidents/${id}`);
+}
+
 export function createIncident(data) {
   return request('POST', '/incidents', data);
 }
@@ -101,6 +105,14 @@ export function getNotifications() {
 
 export function markAllRead() {
   return request('PATCH', '/notifications/read-all');
+}
+
+export function deleteNotification(id) {
+  return request('DELETE', `/notifications/${id}`);
+}
+
+export function deleteAllNotifications() {
+  return request('DELETE', '/notifications');
 }
 
 export function exportExcel() {
@@ -190,6 +202,10 @@ export function uploadLogo(file) {
     if (!res.ok) throw new Error(data.error || 'Upload failed');
     return data;
   });
+}
+
+export function getVersion() {
+  return request('GET', '/version');
 }
 
 export { getToken, setToken, clearToken };

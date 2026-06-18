@@ -89,9 +89,9 @@ RATE_LIMIT_MAX=200
 EOF
 log ".env siap"
 
-# ─── Inisialisasi Database ───────────────────────────────────
+# ─── Inisialisasi Database & Uploads ─────────────────────────
 info "Inisialisasi database..."
-mkdir -p data logs
+mkdir -p data logs uploads
 node src/config/migrate.js
 node src/config/seed.js
 log "Database siap"
@@ -200,8 +200,11 @@ echo ""
 echo -e "  Login dengan user berikut:"
 echo -e "  ${YELLOW}admin${NC}       (password: 12345) — Admin sistem"
 echo -e "  ${YELLOW}perawat1${NC}    (password: 12345) — Pelapor"
+echo -e "  ${YELLOW}dokter1${NC}     (password: 12345) — Pelapor"
 echo -e "  ${YELLOW}validator1${NC}  (password: 12345) — Validator"
 echo -e "  ${YELLOW}pmkp1${NC}       (password: 12345) — PMKP"
+echo -e "  ${YELLOW}kepala_igd${NC}  (password: 12345) — Kepala Unit"
+echo -e "  ${YELLOW}manajemen1${NC}  (password: 12345) — Manajemen"
 echo ""
 echo -e "  Dokumentasi API: ${CYAN}http://$SERVER_IP:${PORT}/api/v1/docs${NC}"
 echo ""

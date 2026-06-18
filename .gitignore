@@ -1,5 +1,9 @@
 node_modules/
 .env
 data/
-*.db# Runtime
 logs/
+uploads/
+*.db
+audit.md
+audit-lanjutan.md
+contoh.md

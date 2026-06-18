@@ -186,11 +186,13 @@ describe('Incidents API', () => {
     expect(res.body.severity).toBe('merah');
   });
 
-  it('PATCH /api/v1/incidents/:id/grade - duplicate grade rejected', async () => {
+  it('PATCH /api/v1/incidents/:id/grade - regrade allowed', async () => {
     const res = await request(app).patch(`/api/v1/incidents/${incidentId}/grade`)
       .set('Authorization', `Bearer ${tokens.validator}`)
       .send({ severity: 'hijau' });
-    expect(res.status).toBe(409);
+    expect(res.status).toBe(200);
+    expect(res.body.severity).toBe('hijau');
+    expect(res.body.regrade).toBe(true);
   });
 
   it('PATCH /api/v1/incidents/:id/grade - pelapor cannot grade', async () => {

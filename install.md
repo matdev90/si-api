@@ -125,18 +125,20 @@ npm run build
 cd ..
 ```
 
-**Langkah 5: Siapkan direktori upload**
+**Langkah 5: Siapkan direktori upload & data**
 
 ```bash
-mkdir -p /opt/si-api/uploads
+mkdir -p /opt/si-api/uploads /opt/si-api/data /opt/si-api/logs
 ```
 
 **Langkah 6: Inisialisasi database**
 
 ```bash
-node src/config/migrate.js
-node src/config/seed.js
+node src/config/migrate.js   # Membuat tabel + seed user default + migrasi
+node src/config/seed.js      # Seed tambahan (jika user belum ada)
 ```
+
+Migrasi berjalan otomatis saat server start, tetapi bisa dijalankan manual.
 
 **Langkah 7: Jalankan**
 
@@ -144,16 +146,21 @@ node src/config/seed.js
 node src/index.js
 ```
 
+Server akan:
+- Menjalankan migrasi otomatis
+- Memulai scheduler notifikasi deadline (setiap jam 07:00)
+- Menyajikan frontend dan API
+
 Verifikasi:
 
 ```bash
 curl http://localhost:3000/api/v1/health
-# Output: {"status":"ok","timestamp":"..."}
+# Output: {"status":"ok","timestamp":"...","version":"1.0.0"}
 curl http://192.168.90.7:3000/api/v1/health
-# Output: {"status":"ok","timestamp":"..."}
+# Output: {"status":"ok","timestamp":"...","version":"1.0.0"}
 ```
 
-**Langkah 7: Setup systemd service (auto-start)**
+**Langkah 8: Setup systemd service (auto-start)**
 
 ```bash
 sudo tee /etc/systemd/system/si-api.service << 'EOF'
@@ -211,6 +218,11 @@ nano .env
 ```bash
 docker compose up -d --build
 ```
+
+Docker akan:
+- Build backend + frontend dalam multi-stage build
+- Menjalankan migrasi + seed otomatis di `start.sh`
+- Healthcheck setiap 30 detik ke `/api/v1/health`
 
 **Langkah 4: Verifikasi**
 
@@ -276,7 +288,111 @@ sudo certbot --nginx -d si-api.rsusoedjono.local
 
 ---
 
-## 4. Backup & Restore
+## 4. Pengguna Default
+
+Setelah seed, 7 user default tersedia:
+
+| Username | Password | Role | Unit |
+|----------|----------|------|------|
+| `admin` | `12345` | Admin | IT |
+| `perawat1` | `12345` | Pelapor | IGD |
+| `dokter1` | `12345` | Pelapor | IGD |
+| `validator1` | `12345` | Validator | PMKP |
+| `pmkp1` | `12345` | PMKP | PMKP |
+| `kepala_igd` | `12345` | Kepala Unit | IGD |
+| `manajemen1` | `12345` | Manajemen | Direksi |
+
+Semua user default memiliki `must_change_password=1` — akan diminta ganti password saat login pertama.
+
+---
+
+## 5. Struktur API
+
+### Autentikasi
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| POST | `/api/v1/auth/login` | Login |
+| GET | `/api/v1/auth/me` | Profil user saat ini |
+| PATCH | `/api/v1/auth/change-password` | Ubah password |
+
+### Insiden
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| POST | `/api/v1/incidents` | Buat laporan baru |
+| GET | `/api/v1/incidents` | Daftar insiden (pagination + filter) |
+| GET | `/api/v1/incidents/:id` | Detail insiden |
+| PATCH | `/api/v1/incidents/:id/grade` | Grading severity |
+| PATCH | `/api/v1/incidents/:id/status` | Update status (state machine) |
+| DELETE | `/api/v1/incidents/:id` | Hapus insiden (admin only) |
+
+### Investigasi
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/v1/investigations` | Daftar investigasi |
+| GET | `/api/v1/investigations/:id` | Detail investigasi |
+| PATCH | `/api/v1/investigations/:id/complete` | Lengkapi investigasi |
+
+### Master Data
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/v1/master/ruangan` | Daftar ruangan |
+| POST | `/api/v1/master/ruangan` | Tambah ruangan (admin) |
+| PATCH | `/api/v1/master/ruangan/:id` | Edit ruangan (admin) |
+| DELETE | `/api/v1/master/ruangan/:id` | Hapus ruangan (admin) |
+| GET | `/api/v1/master/users` | Daftar users (admin) |
+| POST | `/api/v1/master/users` | Tambah user (admin) |
+| PATCH | `/api/v1/master/users/:id` | Edit user (admin) |
+| DELETE | `/api/v1/master/users/:id` | Hapus user (admin) |
+
+### Dashboard
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/v1/dashboard/stats` | Statistik dashboard |
+| GET | `/api/v1/dashboard/trends` | Trend bulanan/tahunan |
+
+### Laporan & Export
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/v1/laporan` | Data laporan (JSON) |
+| GET | `/api/v1/laporan/export/excel` | Export Excel |
+| GET | `/api/v1/laporan/export/pdf` | Export PDF |
+
+### Lainnya
+
+| Method | Endpoint | Deskripsi |
+|--------|----------|-----------|
+| GET | `/api/v1/notifications` | Notifikasi user |
+| GET | `/api/v1/settings` | Pengaturan sistem |
+| PUT | `/api/v1/settings` | Update pengaturan (admin) |
+| POST | `/api/v1/settings/logo` | Upload logo RS |
+| GET | `/api/v1/health` | Health check |
+| GET | `/api/v1/docs` | Dokumentasi API (Swagger) |
+
+---
+
+## 6. State Machine Status Insiden
+
+Status insiden mengikuti aturan transisi berikut:
+
+```
+dilaporkan ──→ divalidasi ──→ investigasi ──→ ditindaklanjuti ──→ selesai
+     │              │              │                │
+     └──→ ditolak ←┘              └──→ ditolak ←───┘
+```
+
+Status `selesai` dan `ditolak` bersifat terminal — tidak ada transisi keluar.
+
+Hanya role `pmkp`, `validator`, dan `admin` yang bisa mengubah status.
+
+---
+
+## 7. Backup & Restore
 
 ### Backup Database & Uploads
 
@@ -284,28 +400,27 @@ sudo certbot --nginx -d si-api.rsusoedjono.local
 # Cron harian
 sudo crontab -e
 # Tambahkan:
-0 2 * * * cp /opt/si-api/data/si-api.db /opt/si-api/backups/si-api-$(date +\%Y\%m\%d).db && cp -r /opt/si-api/uploads /opt/si-api/backups/uploads-$(date +\%Y\%m\%d)
+0 2 * * * cp /opt/si-api/data/si-api.db /opt/si-api/backup/si-api-$(date +\%Y\%m\%d).db && cp -r /opt/si-api/uploads /opt/si-api/backup/uploads-$(date +\%Y\%m\%d)
 ```
 
 ### Restore Database
 
 ```bash
-cp /opt/si-api/backups/si-api-20260610.db /opt/si-api/data/si-api.db
-cp -r /opt/si-api/backups/uploads-20260610/* /opt/si-api/uploads/
+cp /opt/si-api/backup/si-api-20260610.db /opt/si-api/data/si-api.db
+cp -r /opt/si-api/backup/uploads-20260610/* /opt/si-api/uploads/
 sudo systemctl restart si-api
 # atau: docker compose restart
 ```
 
 ---
 
-## 5. Logging & Monitoring
+## 8. Logging & Monitoring
 
 ### Lokasi Log
 
 | Jenis | Path |
 |-------|------|
-| Aplikasi | `/opt/si-api/logs/app.log` |
-| Error | `/opt/si-api/logs/error.log` |
+| Aplikasi | `/opt/si-api/app.log` |
 | Systemd | `journalctl -u si-api -f` |
 | Docker | `docker logs si-api -f` |
 
@@ -313,7 +428,7 @@ sudo systemctl restart si-api
 
 ```bash
 sudo tee /etc/logrotate.d/si-api << 'EOF'
-/opt/si-api/logs/*.log {
+/opt/si-api/*.log {
     daily
     rotate 30
     compress
@@ -324,23 +439,30 @@ sudo tee /etc/logrotate.d/si-api << 'EOF'
 EOF
 ```
 
+### Scheduler Notifikasi
+
+Sistem menjalankan scheduler cron setiap jam 07:00 yang:
+- Mengecek investigasi dengan deadline H-7, H-3, H-1
+- Mendeteksi investigasi yang overdue
+- Mengirim notifikasi ke user terkait
+
 ---
 
-## 6. Verifikasi Kelengkapan
+## 9. Verifikasi Kelengkapan
 
 Jalankan test setelah instalasi:
 
 ```bash
 cd /opt/si-api
 npm test
-# Output: 76 passed
+# Output: 76+ passed
 ```
 
 Buka browser: `http://192.168.90.7:3000` (atau `http://192.168.90.7` jika pakai Nginx)
 
 ---
 
-## 7. Troubleshooting
+## 10. Troubleshooting
 
 | Masalah | Penyebab | Solusi |
 |---------|----------|--------|
@@ -350,3 +472,5 @@ Buka browser: `http://192.168.90.7:3000` (atau `http://192.168.90.7` jika pakai 
 | 502 Bad Gateway (Nginx) | Backend mati | `systemctl restart si-api` |
 | 413 Request Entity Too Large | Upload > limit | Tambah `client_max_body_size` di Nginx |
 | Permission denied (data/) | User ownership | `chown -R sisiapp:sisiapp /opt/si-api` |
+| Transisi status ditolak | State machine violation | Cek status insiden saat ini |
+| Notifikasi deadline tidak terkirim | Scheduler butuh restart | `systemctl restart si-api` |

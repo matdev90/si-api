@@ -53,6 +53,32 @@ const registerSchema = z.object({
   unit: z.string().min(2).max(100),
 });
 
+const tipeInsidenOptions = [
+  'administrasi_klinik', 'proses_prosedur_klinis', 'dokumentasi',
+  'infeksi_nosokomial', 'medikasi', 'transfusi_darah',
+  'nutrisi', 'oksigen_gas', 'alat_medis',
+  'perilaku_pasien', 'jatuh', 'kecelakaan',
+  'infrastruktur', 'resource_organisasi', 'laboratorium',
+];
+
+const subtipeInsidenMap = {
+  administrasi_klinik: ['proses', 'masalah'],
+  proses_prosedur_klinis: ['proses', 'masalah'],
+  dokumentasi: ['dokumen_terkait', 'masalah'],
+  infeksi_nosokomial: ['tipe_organisme', 'tipe_bagian_infeksi'],
+  medikasi: ['medikasi_terkait', 'proses_penggunaan', 'masalah'],
+  transfusi_darah: ['transfusi_terkait', 'proses_transfusi', 'masalah'],
+  nutrisi: ['nutrisi_terkait', 'proses_nutrisi', 'masalah'],
+  oksigen_gas: ['oksigen_terkait', 'proses_penggunaan', 'masalah'],
+  alat_medis: ['tipe_alat', 'masalah'],
+  perilaku_pasien: ['perilaku_pasien', 'aggression'],
+  jatuh: ['tipe_jatuh', 'keterlibatan_saat_jatuh'],
+  kecelakaan: ['benturan_tumpul', 'serangan_tajam', 'kejadian_mekanik', 'mekanisme_panas', 'ancaman_pernafasan', 'paparan_kimia', 'mekanisme_spesifik', 'bencana_alam'],
+  infrastruktur: ['keterlibatan_struktur', 'masalah'],
+  resource_organisasi: ['beban_kerja', 'ketersediaan_tempat_tidur', 'sdm', 'ketersediaan_staf', 'organisasi_tim', 'protocol_kebijakan', 'ketersediaan_adekuasi'],
+  laboratorium: ['pengambilan', 'transport', 'sorting', 'data_entry', 'prosesing', 'verifikasi', 'hasil'],
+};
+
 const incidentCreateSchema = z.object({
   incident_type: z.enum(['KTD', 'KNC', 'KPC', 'KTC', 'sentinel']),
   incident_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
@@ -64,20 +90,30 @@ const incidentCreateSchema = z.object({
   is_anonymous: z.boolean().optional(),
   attachments: z.array(z.string()).max(5).optional(),
   no_rm: z.string().max(20).optional(),
-  umur: z.number().int().min(0).max(150).optional(),
+  umur: z.enum(['0-1_bulan', '1_bulan-1_tahun', '1-5_tahun', '5-15_tahun', '15-30_tahun', '30-65_tahun', '65_plus_tahun']).optional(),
   jenis_kelamin: z.enum(['Laki-laki', 'Perempuan']).optional(),
-  penanggung_biaya: z.string().max(50).optional(),
+  penanggung_biaya: z.enum(['Pribadi', 'BPJS', 'JAMKESMAS', 'Asuransi Swasta', 'Perusahaan', 'Lainnya']).optional(),
   tgl_masuk_rs: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   jam_masuk_rs: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   ruangan_id: z.string().max(36).optional(),
   probabilitas: z.number().int().min(1).max(5).optional(),
   dampak: z.number().int().min(1).max(5).optional(),
   grade_otomatis: z.string().optional(),
-  akibat_insiden: z.string().max(100).optional(),
+  akibat_insiden: z.enum(['Kematian', 'Cedera Berat/Irreversibel', 'Cedera Sedang/Reversibel', 'Cedera Ringan', 'Tidak Ada Cedera']).optional(),
   tindakan_awal: z.string().max(2000).optional(),
-  tindakan_oleh: z.string().max(50).optional(),
+  tindakan_oleh: z.enum(['Tim', 'Dokter', 'Perawat', 'Petugas Lainnya']).optional(),
   pernah_terjadi: z.enum(['Ya', 'Tidak']).optional(),
   pencegahan_ulang: z.string().max(2000).optional(),
+  incident_summary: z.string().max(200).optional(),
+  tipe_insiden: z.enum(tipeInsidenOptions).optional(),
+  subtipe_insiden: z.string().max(100).optional(),
+  spesialisasi: z.enum([
+    'Penyakit Dalam', 'Anak', 'Bedah', 'Obstetri Ginekologi',
+    'THT', 'Mata', 'Saraf', 'Anastesi', 'Kulit & Kelamin',
+    'Jantung', 'Paru', 'Jiwa', 'Umum', 'Lainnya',
+  ]).optional(),
+  unit_penyebab: z.string().max(100).optional(),
+  first_reporter: z.enum(['Karyawan', 'Pasien', 'Keluarga/Pendamping', 'Pengunjung', 'Lainnya']).optional(),
 });
 
 const incidentGradeSchema = z.object({
@@ -92,6 +128,12 @@ const investigationCompleteSchema = z.object({
   root_cause: z.string().min(10).max(5000),
   recommendations: z.string().min(10).max(5000),
   action_plan: z.string().max(5000).optional(),
+  faktor_kontributor: z.array(z.string()).max(20).optional(),
+  pic_name: z.string().max(100).optional(),
+  pic_role: z.string().max(100).optional(),
+  follow_up_actions: z.string().max(5000).optional(),
+  follow_up_deadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  management_review: z.boolean().optional(),
 });
 
 const ruanganSchema = z.object({
@@ -105,6 +147,7 @@ const createUserSchema = z.object({
   name: z.string().min(2).max(100),
   role: z.enum(['pelapor', 'validator', 'pmkp', 'kepala_unit', 'manajemen', 'admin']),
   unit: z.string().min(1).max(100),
+  ruangan_id: z.string().max(36).optional(),
 });
 
 const changePasswordSchema = z.object({
@@ -118,6 +161,7 @@ const updateUserSchema = z.object({
   name: z.string().min(2).max(100).optional(),
   role: z.enum(['pelapor', 'validator', 'pmkp', 'kepala_unit', 'manajemen', 'admin']).optional(),
   unit: z.string().min(1).max(100).optional(),
+  ruangan_id: z.string().max(36).optional(),
   is_active: z.number().int().min(0).max(1).optional(),
 });
 

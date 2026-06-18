@@ -1,5 +1,31 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import * as api from '../api/client';
+import Pagination from '../components/Pagination';
+import { useAuth } from '../context/AuthContext';
+
+const severityMeta = {
+  merah: { label: 'Merah', cls: 'tag-merah' },
+  kuning: { label: 'Kuning', cls: 'tag-kuning' },
+  hijau: { label: 'Hijau', cls: 'tag-hijau' },
+  biru: { label: 'Biru', cls: 'tag-biru' },
+};
+
+const statusMeta = {
+  dilaporkan: { label: 'Dilaporkan', cls: 'status-dilaporkan' },
+  divalidasi: { label: 'Divalidasi', cls: 'status-divalidasi' },
+  investigasi: { label: 'Investigasi', cls: 'status-investigasi' },
+  ditindaklanjuti: { label: 'Ditindaklanjuti', cls: 'status-ditindaklanjuti' },
+  selesai: { label: 'Selesai', cls: 'status-selesai' },
+  ditolak: { label: 'Ditolak', cls: 'status-ditolak' },
+};
+
+const typeMeta = {
+  KTD: { label: 'KTD', cls: 'type-ktd' },
+  KNC: { label: 'KNC', cls: 'type-knc' },
+  KPC: { label: 'KPC', cls: 'type-kpc' },
+  KTC: { label: 'KTC', cls: 'type-ktc' },
+  sentinel: { label: 'Sentinel', cls: 'type-sentinel' },
+};
 
 const COLUMN_OPTIONS = [
   { key: 'incident_date', label: 'Tanggal' },
@@ -26,14 +52,20 @@ function loadSavedColumns() {
 }
 
 export default function Laporan() {
+  const { user } = useAuth();
+  const canViewAll = ['admin', 'manajemen', 'pmkp'].includes(user?.role);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [columns, setColumns] = useState(loadSavedColumns);
   const [showColumnPicker, setShowColumnPicker] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
   const [filters, setFilters] = useState({
-    start_date: '', end_date: '', status: '', severity: '', incident_type: '', search: '',
+    start_date: '', end_date: '', status: '', severity: '', incident_type: '', ruangan_id: '',
   });
   const [ruangan, setRuangan] = useState([]);
+  const debounceRef = useRef(null);
 
   useEffect(() => {
     api.getRuangan().then(res => setRuangan(res.data)).catch(() => {});
@@ -43,14 +75,28 @@ export default function Laporan() {
     setLoading(true);
     const params = { ...filters };
     Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
+    if (search) params.search = search;
     if (columns.length) params.columns = columns.join(',');
 
     api.getLaporan(params).then(res => {
       setData(res.data);
     }).catch(() => {}).finally(() => setLoading(false));
-  }, [filters, columns]);
+  }, [filters, columns, search]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setPage(1);
+      fetchData();
+    }, 400);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [search]);
+
+  const paginatedData = pageSize > 0
+    ? data.slice((page - 1) * pageSize, page * pageSize)
+    : data;
 
   const toggleColumn = (key) => {
     setColumns(prev => {
@@ -65,6 +111,7 @@ export default function Laporan() {
   const handleExport = async (format) => {
     const params = { ...filters };
     Object.keys(params).forEach(k => { if (!params[k]) delete params[k]; });
+    if (search) params.search = search;
     if (columns.length) params.columns = columns.join(',');
 
     try {
@@ -87,41 +134,55 @@ export default function Laporan() {
       <div className="page-header">
         <h1>Laporan Insiden</h1>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn" onClick={() => setShowColumnPicker(!showColumnPicker)}>
-            ⚙ Kolom
+          <button className="btn btn-outline" onClick={() => setShowColumnPicker(!showColumnPicker)}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            Kolom
           </button>
-          <button className="btn" onClick={() => handleExport('excel')}>📥 Excel</button>
-          <button className="btn" onClick={() => handleExport('pdf')}>📥 PDF</button>
+          <button className="btn btn-export-excel" onClick={() => handleExport('excel')}>📥 Excel</button>
+          <button className="btn btn-export-pdf" onClick={() => handleExport('pdf')}>📥 PDF</button>
         </div>
       </div>
 
-      {/* Filters */}
       <div className="filters">
         <div className="filter-group">
-          <label>Dari</label>
+          <label>Cari</label>
+          <input type="text" placeholder="Kata kunci..." value={search}
+            onChange={e => setSearch(e.target.value)} style={{ minWidth: 160 }} />
+        </div>
+        {canViewAll && (
+          <div className="filter-group">
+            <label>Ruangan</label>
+            <select value={filters.ruangan_id} onChange={e => { setFilters(f => ({ ...f, ruangan_id: e.target.value, location: '' })); setPage(1); }}>
+              <option value="">Semua Ruangan</option>
+              {ruangan.map(r => (
+                <option key={r.id} value={r.id}>{r.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
+        <div className="filter-group">
+          <label>Dari Tgl</label>
           <input type="date" value={filters.start_date}
             onChange={e => setFilters(f => ({ ...f, start_date: e.target.value }))} />
         </div>
         <div className="filter-group">
-          <label>Sampai</label>
+          <label>Sampai Tgl</label>
           <input type="date" value={filters.end_date}
             onChange={e => setFilters(f => ({ ...f, end_date: e.target.value }))} />
         </div>
         <div className="filter-group">
           <label>Status</label>
           <select value={filters.status} onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}>
-            <option value="">Semua</option>
-            <option value="dilaporkan">Dilaporkan</option>
-            <option value="divalidasi">Divalidasi</option>
-            <option value="investigasi">Investigasi</option>
-            <option value="selesai">Selesai</option>
-            <option value="ditolak">Ditolak</option>
+            <option value="">Semua Status</option>
+            {Object.entries(statusMeta).map(([k, v]) => (
+              <option key={k} value={k}>{v.label}</option>
+            ))}
           </select>
         </div>
         <div className="filter-group">
           <label>Severity</label>
           <select value={filters.severity} onChange={e => setFilters(f => ({ ...f, severity: e.target.value }))}>
-            <option value="">Semua</option>
+            <option value="">Semua Severity</option>
             <option value="merah">Merah</option>
             <option value="kuning">Kuning</option>
             <option value="hijau">Hijau</option>
@@ -129,24 +190,16 @@ export default function Laporan() {
           </select>
         </div>
         <div className="filter-group">
-          <label>Tipe</label>
+          <label>Jenis</label>
           <select value={filters.incident_type} onChange={e => setFilters(f => ({ ...f, incident_type: e.target.value }))}>
-            <option value="">Semua</option>
-            <option value="KTD">KTD</option>
-            <option value="KNC">KNC</option>
-            <option value="KPC">KPC</option>
-            <option value="KTC">KTC</option>
-            <option value="sentinel">Sentinel</option>
+            <option value="">Semua Jenis</option>
+            {Object.entries(typeMeta).map(([k, v]) => (
+              <option key={k} value={k}>{v.label}</option>
+            ))}
           </select>
-        </div>
-        <div className="filter-group">
-          <label>Cari</label>
-          <input type="text" placeholder="Kata kunci..." value={filters.search}
-            onChange={e => setFilters(f => ({ ...f, search: e.target.value }))} />
         </div>
       </div>
 
-      {/* Column Picker */}
       {showColumnPicker && (
         <div className="column-picker">
           {COLUMN_OPTIONS.map(c => (
@@ -159,26 +212,61 @@ export default function Laporan() {
         </div>
       )}
 
-      {/* Table */}
-      <div className="table-container">
-        <table className="table">
+      <div className="table-container incident-table-wrap">
+        <table className="table incident-table">
           <thead>
             <tr>
+              <th>NO</th>
               {COLUMN_OPTIONS.filter(c => columns.includes(c.key)).map(c => (
                 <th key={c.key}>{c.label}</th>
               ))}
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {data.map((row, i) => (
-              <tr key={i}>
-                {COLUMN_OPTIONS.filter(c => columns.includes(c.key)).map(c => (
-                  <td key={c.key}>{row[c.label] || '-'}</td>
-                ))}
-              </tr>
-            ))}
-            {data.length === 0 && (
-              <tr><td colSpan={columns.length} className="empty">
+            {paginatedData.map((row, i) => {
+              const sv = severityMeta[row['Severity']];
+              const st = statusMeta[row['Status']];
+              const tp = typeMeta[row['Tipe']];
+              return (
+                <tr key={i} className="incident-row" style={{ animationDelay: `${i * 0.03}s` }}>
+                  <td className="row-num">{i + 1 + (page - 1) * pageSize}</td>
+                  {COLUMN_OPTIONS.filter(c => columns.includes(c.key)).map(c => {
+                    const raw = row[c.label];
+                    let content;
+                    if (c.key === 'severity') {
+                      content = sv ? (
+                        <span className={`severity-badge ${sv.cls}`}>
+                          <span className="sev-dot" />
+                          {sv.label}
+                        </span>
+                      ) : <span className="severity-badge sev-none">-</span>;
+                    } else if (c.key === 'status') {
+                      content = st ? (
+                        <span className={`status-badge ${st.cls}`}>{st.label}</span>
+                      ) : <span className="status-badge">-</span>;
+                    } else if (c.key === 'incident_type') {
+                      content = tp ? (
+                        <span className={`type-badge ${tp.cls}`}>{tp.label}</span>
+                      ) : raw;
+                    } else {
+                      content = raw || '-';
+                    }
+                    return <td key={c.key}>{content}</td>;
+                  })}
+                  <td className="cell-actions">
+                    {row._id && (
+                      <a href={`/incidents/${row._id}`} className="btn-incident-detail">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        Detail
+                      </a>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+              {data.length === 0 && (
+              <tr><td colSpan={columns.length + 2} className="empty">
                 {loading ? 'Memuat...' : 'Tidak ada data dengan filter yang dipilih'}
               </td></tr>
             )}
@@ -186,9 +274,7 @@ export default function Laporan() {
         </table>
       </div>
 
-      <div style={{ marginTop: 12, fontSize: 13, color: '#6b7280' }}>
-        Total: {data.length} insiden
-      </div>
+      <Pagination total={data.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
     </div>
   );
 }

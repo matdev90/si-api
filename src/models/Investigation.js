@@ -50,7 +50,7 @@ const Investigation = {
 
   update(id, fields) {
     const sets = Object.keys(fields).map(k => `${k} = ?`).join(', ');
-    const values = Object.values(fields);
+    const values = Object.values(fields).map(v => v === undefined ? null : v);
     execute(`UPDATE investigations SET ${sets}, updated_at = datetime('now') WHERE id = ?`, [...values, id]);
   }
 };

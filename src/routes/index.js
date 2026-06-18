@@ -28,8 +28,14 @@ router.use('/master', masterRoutes);
 router.use('/laporan', laporanRoutes);
 router.use('/settings', settingsRoutes);
 
+const { version } = require('../../package.json');
+
 router.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', timestamp: new Date().toISOString(), version });
+});
+
+router.get('/version', (_req, res) => {
+  res.json({ version });
 });
 
 module.exports = router;

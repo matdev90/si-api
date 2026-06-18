@@ -21,6 +21,14 @@ const Notification = {
   getUnreadCount(userId) {
     const rows = query(`SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0`, [userId]);
     return rows[0]?.count || 0;
+  },
+
+  delete(id, userId) {
+    execute(`DELETE FROM notifications WHERE id = ? AND user_id = ?`, [id, userId]);
+  },
+
+  deleteAll(userId) {
+    execute(`DELETE FROM notifications WHERE user_id = ?`, [userId]);
   }
 };
 

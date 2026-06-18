@@ -158,6 +158,47 @@ const migrations = [
       ALTER TABLE incidents ADD COLUMN pernah_terjadi TEXT DEFAULT 'Tidak';
       ALTER TABLE incidents ADD COLUMN pencegahan_ulang TEXT;
     `
+  },
+  {
+    name: '012_add_users_ruangan_id',
+    sql: `ALTER TABLE users ADD COLUMN ruangan_id TEXT;`
+  },
+  {
+    name: '013_add_incident_audit_fields',
+    multi: true,
+    sql: `
+      ALTER TABLE incidents ADD COLUMN incident_summary TEXT;
+      ALTER TABLE incidents ADD COLUMN tipe_insiden TEXT;
+      ALTER TABLE incidents ADD COLUMN subtipe_insiden TEXT;
+      ALTER TABLE incidents ADD COLUMN spesialisasi TEXT;
+      ALTER TABLE incidents ADD COLUMN unit_penyebab TEXT;
+      ALTER TABLE incidents ADD COLUMN first_reporter TEXT;
+    `
+  },
+  {
+    name: '014_add_investigation_audit_fields',
+    multi: true,
+    sql: `
+      ALTER TABLE investigations ADD COLUMN faktor_kontributor TEXT;
+      ALTER TABLE investigations ADD COLUMN pic_name TEXT;
+      ALTER TABLE investigations ADD COLUMN pic_role TEXT;
+      ALTER TABLE investigations ADD COLUMN follow_up_actions TEXT;
+      ALTER TABLE investigations ADD COLUMN follow_up_deadline TEXT;
+      ALTER TABLE investigations ADD COLUMN management_review INTEGER DEFAULT 0;
+      ALTER TABLE investigations ADD COLUMN regrade_severity TEXT;
+    `
+  },
+  {
+    name: '015_seed_hospital_settings',
+    multi: true,
+    sql: `
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_ownership', '');
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_type', '');
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_class', '');
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_bed_capacity', '');
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_province', '');
+      INSERT OR IGNORE INTO settings (key, value) VALUES ('hospital_code', '');
+    `
   }
 ];
 

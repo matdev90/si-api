@@ -13,14 +13,20 @@ async function getSettings(req, res, next) {
   }
 }
 
+const hospitalFields = [
+  'hospital_name', 'hospital_ownership', 'hospital_type', 'hospital_class',
+  'hospital_bed_capacity', 'hospital_province', 'hospital_code',
+];
+
 async function updateSettings(req, res, next) {
   try {
-    const { hospital_name } = req.validated;
-    if (hospital_name && hospital_name.trim()) {
-      Settings.set('hospital_name', hospital_name.trim());
+    for (const field of hospitalFields) {
+      if (req.validated[field] !== undefined) {
+        Settings.set(field, String(req.validated[field]).trim());
+      }
     }
     const settings = Settings.getAll();
-    logger.info(`Hospital name updated to: ${hospital_name}`);
+    logger.info(`Settings updated by ${req.user.id}: ${Object.keys(req.validated).join(', ')}`);
     res.json(settings);
   } catch (err) {
     next(err);

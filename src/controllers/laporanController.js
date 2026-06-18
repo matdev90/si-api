@@ -18,14 +18,16 @@ const ALL_COLUMNS = [
 
 function buildFilters(query, user) {
   const filters = {};
-  if (user.role === 'kepala_unit') filters.unit = user.unit;
+  if (user.role === 'kepala_unit' || user.role === 'pelapor') filters.unit = user.unit;
   if (query.status) filters.status = query.status;
   if (query.severity) filters.severity = query.severity;
   if (query.incident_type) filters.incident_type = query.incident_type;
   if (query.start_date) filters.start_date = query.start_date;
   if (query.end_date) filters.end_date = query.end_date;
   if (query.search) filters.search = query.search;
-  if (query.unit) filters.unit = query.unit;
+  if (query.location) filters.location = query.location;
+  if (query.ruangan_id && ['admin', 'pmkp', 'manajemen'].includes(user.role)) filters.ruangan_id = query.ruangan_id;
+  if (query.unit && ['admin', 'pmkp', 'manajemen'].includes(user.role)) filters.unit = query.unit;
   return filters;
 }
 
@@ -40,9 +42,13 @@ async function getReportData(req) {
   const columns = parseColumns(req.query.columns);
   const { rows } = await Incident.findAll(filters);
   const data = rows.map(r => {
-    const row = {};
+    const row = { _id: r.id };
     columns.forEach(c => {
-      row[c.label] = r[c.key] || '-';
+      if (c.key === 'location') {
+        row[c.label] = r.current_location || r.location || '-';
+      } else {
+        row[c.label] = r[c.key] || '-';
+      }
     });
     return row;
   });
@@ -77,37 +83,87 @@ async function exportPDF(req, res, next) {
     res.setHeader('Content-Disposition', `attachment; filename=laporan_insiden_${Date.now()}.pdf`);
     doc.pipe(res);
 
-    doc.fontSize(16).font('Helvetica-Bold').text('Laporan Insiden Keselamatan Pasien', { align: 'center' });
-    doc.fontSize(10).font('Helvetica').text('RSUD dr. R. Soedjono Selong', { align: 'center' });
-    doc.moveDown(0.5);
-    const filterParts = [];
-    if (req.query.start_date) filterParts.push(`Dari: ${req.query.start_date}`);
-    if (req.query.end_date) filterParts.push(`Sampai: ${req.query.end_date}`);
-    if (req.query.status) filterParts.push(`Status: ${req.query.status}`);
-    if (req.query.severity) filterParts.push(`Severity: ${req.query.severity}`);
-    if (filterParts.length) {
-      doc.fontSize(8).text(`Filter: ${filterParts.join(' | ')}`, { align: 'center' });
-    }
-    doc.fontSize(8).text(`Dicetak: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}`, { align: 'right' });
-    doc.moveDown();
+    const Settings = require('../models/Settings');
+    const settings = Settings.getAll();
+    const rsName = settings.hospital_name || 'RSUD dr. R. Soedjono Selong';
 
-    const colKeys = columns.map(c => c.key);
+    const pageWidth = doc.page.width - 60;
+    const fontSize = 7;
+    const headerH = 14;
+    const rowH = 18;
+    const marginLeft = 30;
     const colLabels = columns.map(c => c.label);
+    const colCount = colLabels.length;
+    const colWidth = Math.min(pageWidth / colCount, 90);
 
-    data.forEach((item, i) => {
-      if (i > 0) doc.moveDown(0.4);
-      doc.fontSize(9).font('Helvetica-Bold');
-      doc.text(`${i + 1}. ${item.Tanggal || item['Tanggal'] || ''} - ${item.Tipe || item['Tipe'] || ''}`);
-      doc.fontSize(8).font('Helvetica');
-      colLabels.forEach((label, j) => {
-        if (j < 2) return;
-        const val = item[label];
-        if (val && val !== '-') {
-          doc.text(`   ${label}: ${String(val).substring(0, 150)}`, { indent: 10 });
-        }
+    function drawHeader() {
+      doc.fontSize(16).font('Helvetica-Bold').text('Laporan Insiden Keselamatan Pasien', { align: 'center' });
+      doc.fontSize(10).font('Helvetica').text(rsName, { align: 'center' });
+      doc.moveDown(0.3);
+      const filterParts = [];
+      if (req.query.start_date) filterParts.push(`Dari: ${req.query.start_date}`);
+      if (req.query.end_date) filterParts.push(`Sampai: ${req.query.end_date}`);
+      if (req.query.status) filterParts.push(`Status: ${req.query.status}`);
+      if (req.query.severity) filterParts.push(`Severity: ${req.query.severity}`);
+      if (filterParts.length) {
+        doc.fontSize(7).text(`Filter: ${filterParts.join(' | ')}`, { align: 'center' });
+      }
+      doc.fontSize(7).text(`Dicetak: ${new Date().toLocaleDateString('id-ID')} ${new Date().toLocaleTimeString('id-ID')}`, { align: 'right' });
+      doc.moveDown(0.5);
+    }
+
+    function drawTable() {
+      const startY = doc.y;
+      if (startY + 30 > doc.page.height - 30) {
+        doc.addPage();
+        drawHeader();
+      }
+
+      let curY = doc.y;
+
+      // Header row
+      doc.rect(marginLeft, curY, colCount * colWidth, headerH).fill('#1e293b');
+      doc.fill('#ffffff').font('Helvetica-Bold').fontSize(fontSize);
+      colLabels.forEach((label, i) => {
+        doc.text(label, marginLeft + i * colWidth + 3, curY + 4, {
+          width: colWidth - 4, align: 'left',
+        });
       });
-    });
+      curY += headerH;
 
+      // Data rows
+      data.forEach((row, idx) => {
+        if (curY + rowH > doc.page.height - 30) {
+          doc.addPage();
+          drawHeader();
+          curY = doc.y;
+          doc.rect(marginLeft, curY, colCount * colWidth, headerH).fill('#1e293b');
+          doc.fill('#ffffff').font('Helvetica-Bold').fontSize(fontSize);
+          colLabels.forEach((label, i) => {
+            doc.text(label, marginLeft + i * colWidth + 3, curY + 4, {
+              width: colWidth - 4, align: 'left',
+            });
+          });
+          curY += headerH;
+        }
+
+        const bg = idx % 2 === 0 ? '#f8fafc' : '#ffffff';
+        doc.rect(marginLeft, curY, colCount * colWidth, rowH).fill(bg);
+        doc.fill('#1f2937').font('Helvetica').fontSize(fontSize);
+        colLabels.forEach((label, i) => {
+          const val = String(row[label] || '-');
+          doc.text(val.length > 25 ? val.substring(0, 24) + '…' : val,
+            marginLeft + i * colWidth + 3, curY + 5, {
+            width: colWidth - 4, align: 'left',
+          });
+        });
+        curY += rowH;
+      });
+      doc.y = curY;
+    }
+
+    drawHeader();
+    drawTable();
     doc.end();
   } catch (err) { next(err); }
 }

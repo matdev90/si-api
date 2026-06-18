@@ -22,15 +22,17 @@ async function login(req, res, next) {
       throw new AppError('Account is inactive', 403);
     }
 
+    const currentUnit = user.current_unit || user.unit;
+
     const token = jwt.sign(
-      { id: user.id, username: user.username, name: user.name, role: user.role, unit: user.unit },
+      { id: user.id, username: user.username, name: user.name, role: user.role, unit: currentUnit },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '8h' }
     );
 
     res.json({
       token,
-      user: { id: user.id, username: user.username, name: user.name, role: user.role, unit: user.unit },
+      user: { id: user.id, username: user.username, name: user.name, role: user.role, unit: currentUnit, ruangan_id: user.ruangan_id },
       mustChangePassword: user.must_change_password === 1
     });
   } catch (err) {

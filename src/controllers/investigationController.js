@@ -5,7 +5,7 @@ const logger = require('../utils/logger');
 
 async function complete(req, res, next) {
   try {
-    const { root_cause, recommendations, action_plan } = req.validated;
+    const { root_cause, recommendations, action_plan, faktor_kontributor, pic_name, pic_role, follow_up_actions, follow_up_deadline, management_review } = req.validated;
 
     const investigation = await Investigation.findById(req.params.id);
     if (!investigation) throw new AppError('Investigation not found', 404);
@@ -14,7 +14,13 @@ async function complete(req, res, next) {
     await Investigation.update(req.params.id, {
       root_cause,
       recommendations,
-      action_plan,
+      action_plan: action_plan || null,
+      faktor_kontributor: faktor_kontributor ? JSON.stringify(faktor_kontributor) : null,
+      pic_name: pic_name || null,
+      pic_role: pic_role || null,
+      follow_up_actions: follow_up_actions || null,
+      follow_up_deadline: follow_up_deadline || null,
+      management_review: management_review ? 1 : 0,
       completed_at: new Date().toISOString(),
       status: 'selesai',
     });

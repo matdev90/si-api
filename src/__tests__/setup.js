@@ -16,7 +16,8 @@ const migrations = [
   `CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL,
     name TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('pelapor','validator','pmkp','kepala_unit','manajemen','admin')),
-    unit TEXT NOT NULL, is_active INTEGER DEFAULT 1,
+    unit TEXT NOT NULL, is_active INTEGER DEFAULT 1, must_change_password INTEGER DEFAULT 0,
+    ruangan_id TEXT,
     created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now'))
   )`,
   `CREATE TABLE IF NOT EXISTS incidents (
@@ -27,6 +28,12 @@ const migrations = [
     severity TEXT CHECK(severity IN ('biru','hijau','kuning','merah')),
     status TEXT DEFAULT 'dilaporkan' CHECK(status IN ('dilaporkan','divalidasi','investigasi','ditindaklanjuti','selesai','ditolak')),
     attachments TEXT, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')),
+    no_rm TEXT, umur TEXT, jenis_kelamin TEXT, penanggung_biaya TEXT,
+    tgl_masuk_rs TEXT, jam_masuk_rs TEXT, ruangan_id TEXT,
+    probabilitas INTEGER, dampak INTEGER, grade_otomatis TEXT,
+    akibat_insiden TEXT, tindakan_awal TEXT, tindakan_oleh TEXT, pernah_terjadi TEXT DEFAULT 'Tidak', pencegahan_ulang TEXT,
+    incident_summary TEXT, tipe_insiden TEXT, subtipe_insiden TEXT,
+    spesialisasi TEXT, unit_penyebab TEXT, first_reporter TEXT,
     FOREIGN KEY (reporter_id) REFERENCES users(id)
   )`,
   `CREATE TABLE IF NOT EXISTS investigations (
@@ -35,6 +42,9 @@ const migrations = [
     root_cause TEXT, recommendations TEXT, action_plan TEXT, deadline TEXT, completed_at TEXT,
     status TEXT DEFAULT 'berlangsung' CHECK(status IN ('berlangsung','selesai')),
     created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now')),
+    faktor_kontributor TEXT, pic_name TEXT, pic_role TEXT,
+    follow_up_actions TEXT, follow_up_deadline TEXT,
+    management_review INTEGER DEFAULT 0, regrade_severity TEXT,
     FOREIGN KEY (incident_id) REFERENCES incidents(id), FOREIGN KEY (investigator_id) REFERENCES users(id)
   )`,
   `CREATE TABLE IF NOT EXISTS notifications (
@@ -46,6 +56,13 @@ const migrations = [
   `CREATE TABLE IF NOT EXISTS audit_logs (
     id TEXT PRIMARY KEY, user_id TEXT, action TEXT NOT NULL, entity_type TEXT NOT NULL,
     entity_id TEXT, details TEXT, created_at TEXT DEFAULT (datetime('now'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS ruangan (
+    id TEXT PRIMARY KEY, name TEXT UNIQUE NOT NULL, description TEXT,
+    is_active INTEGER DEFAULT 1, created_at TEXT DEFAULT (datetime('now')), updated_at TEXT DEFAULT (datetime('now'))
+  )`,
+  `CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY, value TEXT, updated_at TEXT DEFAULT (datetime('now'))
   )`,
 ];
 

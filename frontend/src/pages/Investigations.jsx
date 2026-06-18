@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import * as api from '../api/client';
+import Pagination from '../components/Pagination';
 
-const severityClass = (s) => {
-  if (!s) return 'tag tag-default';
-  return `tag tag-${s}`;
+const severityMeta = {
+  merah: { label: 'Merah', cls: 'tag-merah' },
+  kuning: { label: 'Kuning', cls: 'tag-kuning' },
+  hijau: { label: 'Hijau', cls: 'tag-hijau' },
+  biru: { label: 'Biru', cls: 'tag-biru' },
 };
 
 export default function Investigations() {
@@ -12,15 +15,16 @@ export default function Investigations() {
   const [pagination, setPagination] = useState(null);
   const [filter, setFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
-    const params = { page, limit: 15 };
+    const params = { page, limit: pageSize || 99999 };
     if (filter) params.status = filter;
     api.getInvestigations(params).then(res => {
       setInvestigations(res.data);
       setPagination(res.pagination);
     }).catch(() => {});
-  }, [page, filter]);
+  }, [page, filter, pageSize]);
 
   return (
     <div className="page">
@@ -36,40 +40,57 @@ export default function Investigations() {
         </select>
       </div>
 
-      <div className="table-container">
-        <table className="table">
+      <div className="table-container incident-table-wrap">
+        <table className="table incident-table">
           <thead>
             <tr>
+              <th>NO</th>
               <th>Tipe</th>
               <th>Severity</th>
               <th>Status</th>
               <th>Investigasi</th>
-              <th></th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
-            {investigations.map(inv => (
-              <tr key={inv.id}>
-                <td>{inv.incident_type}</td>
-                <td><span className={severityClass(inv.severity)}>{inv.severity || '-'}</span></td>
-                <td>{inv.status === 'selesai' ? '✅ Selesai' : '⏳ Berlangsung'}</td>
-                <td>{inv.type}</td>
-                <td><Link to={`/investigations/${inv.id}`} className="btn btn-sm">Detail</Link></td>
-              </tr>
-            ))}
+            {investigations.map((inv, idx) => {
+              const sv = severityMeta[inv.severity];
+              return (
+                <tr key={inv.id} className="incident-row" style={{ animationDelay: `${idx * 0.04}s` }}>
+                  <td className="row-num">{idx + 1 + (page - 1) * (pageSize || 20)}</td>
+                  <td>{inv.incident_type}</td>
+                  <td>
+                    {sv ? (
+                      <span className={`severity-badge ${sv.cls}`}>
+                        <span className="sev-dot" />
+                        {sv.label}
+                      </span>
+                    ) : <span className="severity-badge sev-none">-</span>}
+                  </td>
+                  <td>
+                    <span className={`status-badge ${inv.status === 'selesai' ? 'status-selesai' : 'status-investigasi'}`}>
+                      {inv.status === 'selesai' ? 'Selesai' : 'Berlangsung'}
+                    </span>
+                  </td>
+                  <td><span className="type-badge">{inv.type}</span></td>
+                  <td className="cell-actions">
+                    <Link to={`/investigations/${inv.id}`} className="btn-incident-detail">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                      Detail
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
             {investigations.length === 0 && (
-              <tr><td colSpan={5} className="empty">Belum ada investigasi</td></tr>
+              <tr><td colSpan={6} className="empty">Belum ada investigasi</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
-      {pagination && pagination.totalPages > 1 && (
-        <div className="pagination">
-          <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}>← Prev</button>
-          <span>Halaman {pagination.page} dari {pagination.totalPages}</span>
-          <button disabled={page >= pagination.totalPages} onClick={() => setPage(p => p + 1)}>Next →</button>
-        </div>
+      {pagination && (
+        <Pagination total={pagination.total} page={pagination.page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
       )}
     </div>
   );

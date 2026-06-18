@@ -8,10 +8,13 @@ const { validate, ruanganSchema, createUserSchema, updateUserSchema } = require(
 
 const router = Router();
 
+// GET ruangan accessible to all authenticated users (needed for forms)
+router.get('/ruangan', authenticate, listRuangan);
+router.get('/ruangan/:id', authenticate, getRuangan);
+
+// Admin-only for mutating master data
 router.use(authenticate, authorize('admin'));
 
-router.get('/ruangan', listRuangan);
-router.get('/ruangan/:id', getRuangan);
 router.post('/ruangan', validate(ruanganSchema), createRuangan);
 router.patch('/ruangan/:id', validate(ruanganSchema), updateRuangan);
 router.delete('/ruangan/:id', deleteRuangan);

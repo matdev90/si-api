@@ -17,7 +17,7 @@ const securityMiddleware = [
 
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: parseInt(process.env.RATE_LIMIT_MAX || '200'),
+    max: parseInt(process.env.RATE_LIMIT_MAX || '1000'),
     standardHeaders: true,
     legacyHeaders: false,
     message: { error: 'Too many requests, please try again later' },
@@ -26,7 +26,7 @@ const securityMiddleware = [
 
 const authRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: parseInt(process.env.RATE_LIMIT_AUTH_MAX || '30'),
   message: { error: 'Too many login attempts, please try again later' },
 });
 

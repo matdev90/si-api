@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../api/client';
+import NotificationModal from '../components/NotificationModal';
 
 export default function InvestigationDetail() {
   const { id } = useParams();
@@ -11,7 +12,23 @@ export default function InvestigationDetail() {
   const [incident, setIncident] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({ root_cause: '', recommendations: '', action_plan: '' });
+  const [notif, setNotif] = useState({ message: '', type: '' });
+  const kontributorOptions = [
+  'Faktor Eksternal / di Luar RS',
+  'Faktor Organisasi & Manajemen',
+  'Faktor Lingkungan Kerja',
+  'Faktor Tim',
+  'Faktor Petugas / Staf',
+  'Faktor Tugas',
+  'Faktor Pasien',
+  'Faktor Komunikasi',
+];
+
+const [form, setForm] = useState({
+  root_cause: '', recommendations: '', action_plan: '',
+  faktor_kontributor: [], pic_name: '', pic_role: '',
+  follow_up_actions: '', follow_up_deadline: '', management_review: false,
+});
 
   const fetchData = () => {
     setLoading(true);
@@ -21,6 +38,12 @@ export default function InvestigationDetail() {
         root_cause: data.root_cause || '',
         recommendations: data.recommendations || '',
         action_plan: data.action_plan || '',
+        faktor_kontributor: data.faktor_kontributor ? JSON.parse(data.faktor_kontributor) : [],
+        pic_name: data.pic_name || '',
+        pic_role: data.pic_role || '',
+        follow_up_actions: data.follow_up_actions || '',
+        follow_up_deadline: data.follow_up_deadline || '',
+        management_review: !!data.management_review,
       });
       if (data.incident_id) {
         const inc = await api.getIncident(data.incident_id);
@@ -35,8 +58,9 @@ export default function InvestigationDetail() {
   const handleComplete = async () => {
     try {
       await api.completeInvestigation(id, form);
+      setNotif({ message: 'Investigasi berhasil diselesaikan', type: 'success' });
       fetchData();
-    } catch (err) { setError(err.message); }
+    } catch (err) { setNotif({ message: err.message, type: 'error' }); }
   };
 
   if (loading) return <div className="page loading"><div className="spinner" /><p>Memuat...</p></div>;
@@ -91,9 +115,55 @@ export default function InvestigationDetail() {
                   onChange={e => setForm(f => ({ ...f, recommendations: e.target.value }))} />
               </div>
               <div className="form-group">
+                <label>Faktor Kontributor</label>
+                <div style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #d1d5db', borderRadius: 6, padding: 8 }}>
+                  {kontributorOptions.map(opt => (
+                    <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0', cursor: 'pointer' }}>
+                      <input type="checkbox" checked={form.faktor_kontributor.includes(opt)}
+                        onChange={e => {
+                          const next = e.target.checked
+                            ? [...form.faktor_kontributor, opt]
+                            : form.faktor_kontributor.filter(f => f !== opt);
+                          setForm(f => ({ ...f, faktor_kontributor: next }));
+                        }} />
+                      <span style={{ fontSize: 13 }}>{opt}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div className="form-group">
                 <label>Rencana Tindak Lanjut</label>
                 <textarea rows="3" value={form.action_plan}
                   onChange={e => setForm(f => ({ ...f, action_plan: e.target.value }))} />
+              </div>
+              <div className="form-row" style={{ display: 'flex', gap: 8 }}>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label>PIC / Penanggung Jawab</label>
+                  <input type="text" value={form.pic_name} placeholder="Nama"
+                    onChange={e => setForm(f => ({ ...f, pic_name: e.target.value }))} />
+                </div>
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label>Jabatan PIC</label>
+                  <input type="text" value={form.pic_role} placeholder="Jabatan"
+                    onChange={e => setForm(f => ({ ...f, pic_role: e.target.value }))} />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Tindak Lanjut Detail</label>
+                <textarea rows="3" value={form.follow_up_actions}
+                  onChange={e => setForm(f => ({ ...f, follow_up_actions: e.target.value }))} placeholder="Langkah-langkah tindak lanjut yang akan dilakukan" />
+              </div>
+              <div className="form-group">
+                <label>Deadline Tindak Lanjut</label>
+                <input type="date" value={form.follow_up_deadline}
+                  onChange={e => setForm(f => ({ ...f, follow_up_deadline: e.target.value }))} />
+              </div>
+              <div className="form-group checkbox" style={{ margin: '8px 0' }}>
+                <label>
+                  <input type="checkbox" checked={form.management_review}
+                    onChange={e => setForm(f => ({ ...f, management_review: e.target.checked }))} />
+                  Manajemen Risiko sudah mereview
+                </label>
               </div>
               {canComplete && (
                 <button className="btn btn-primary btn-full" onClick={handleComplete}
@@ -123,8 +193,41 @@ export default function InvestigationDetail() {
               <p>{investigation.action_plan}</p>
             </div>
           )}
+          {investigation.faktor_kontributor && (
+            <div className="detail-section">
+              <h4>Faktor Kontributor</h4>
+              <ul>{JSON.parse(investigation.faktor_kontributor).map((f, i) => <li key={i}>{f}</li>)}</ul>
+            </div>
+          )}
+          {investigation.pic_name && (
+            <div className="detail-row">
+              <span className="detail-label">PIC</span>
+              <span className="detail-value">{investigation.pic_name}{investigation.pic_role ? ` (${investigation.pic_role})` : ''}</span>
+            </div>
+          )}
+          {investigation.follow_up_deadline && (
+            <div className="detail-row">
+              <span className="detail-label">Deadline Tindak Lanjut</span>
+              <span className="detail-value">{investigation.follow_up_deadline}</span>
+            </div>
+          )}
+          {!!investigation.management_review && (
+            <div className="detail-row">
+              <span className="detail-label">Management Review</span>
+              <span className="detail-value">Sudah direview</span>
+            </div>
+          )}
+          {investigation.regrade_severity && (
+            <div className="detail-row">
+              <span className="detail-label">Grading Ulang</span>
+              <span className="detail-value">{investigation.regrade_severity.toUpperCase()}</span>
+            </div>
+          )}
         </div>
       )}
+
+      <NotificationModal message={notif.message} type={notif.type}
+        onClose={() => setNotif({ message: '', type: '' })} />
     </div>
   );
 }

@@ -28,4 +28,22 @@ async function markAllRead(req, res, next) {
   }
 }
 
-module.exports = { list, markRead, markAllRead };
+async function remove(req, res, next) {
+  try {
+    await Notification.delete(req.params.id, req.user.id);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteAll(req, res, next) {
+  try {
+    await Notification.deleteAll(req.user.id);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { list, markRead, markAllRead, remove, deleteAll };

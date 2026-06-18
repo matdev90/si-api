@@ -17,7 +17,7 @@ async function exportExcel(req, res, next) {
       Tipe: inc.incident_type,
       Tanggal: inc.incident_date,
       Waktu: inc.incident_time,
-      Lokasi: inc.location,
+      Lokasi: inc.current_location || inc.location,
       Severity: inc.severity || '-',
       Status: inc.status,
       Pelapor: inc.is_anonymous ? 'Anonim' : inc.reporter_name || '-',
@@ -65,7 +65,7 @@ async function exportPDF(req, res, next) {
 
       doc.fontSize(9);
       doc.text(`${i + 1}. [${inc.incident_type}] ${inc.incident_date} ${inc.incident_time}`);
-      doc.text(`   Lokasi: ${inc.location} | Severity: ${inc.severity || '-'} | Status: ${inc.status}`);
+      doc.text(`   Lokasi: ${inc.current_location || inc.location} | Severity: ${inc.severity || '-'} | Status: ${inc.status}`);
       doc.text(`   Pelapor: ${inc.is_anonymous ? 'Anonim' : inc.reporter_name || '-'}`);
       doc.text(`   Kronologis: ${inc.description?.substring(0, 200)}`);
       doc.moveDown(0.5);

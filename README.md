@@ -21,19 +21,22 @@
 
 ## Tentang
 
-SI-API adalah sistem internal untuk pelaporan, analisa, dan investigasi insiden keselamatan pasien di RSUD dr. R. Soedjono Selong. Dibangun dengan prinsip **just culture** dan **no-blame**, sistem ini mendukung alur kerja dari pelaporan awal hingga investigasi lengkap dengan grading severity, notifikasi real-time, dan export data.
+SI-API adalah sistem internal untuk pelaporan, analisa, dan investigasi insiden keselamatan pasien di RSUD dr. R. Soedjono Selong. Dibangun dengan prinsip **just culture** dan **no-blame**, sistem ini mendukung alur kerja dari pelaporan awal hingga investigasi lengkap dengan grading severity, notifikasi deadline real-time, state machine status, dan export data.
 
 ## Fitur
 
 | Fitur | Deskripsi |
 |-------|-----------|
-| **Pelaporan Insiden** | Laporan anonim/tidak, 5 tipe insiden (KTD/KNC/KPC/KTC/Sentinel) |
-| **Grading Severity** | Biru / Hijau / Kuning / Merah — investigasi auto-created |
-| **Investigasi** | Root cause analysis, rekomendasi, action plan |
-| **Dashboard** | Statistik & trend bulanan/tahunan |
+| **Pelaporan Insiden** | Laporan anonim/tidak, 5 tipe insiden (KTD/KNC/KPC/KTC/Sentinel) + klasifikasi 15 kategori Tabel 5 |
+| **Grading Severity** | Biru / Hijau / Kuning / Merah — investigasi auto-created, mendukung regrading |
+| **State Machine** | Transisi status ketat: dilaporkan → divalidasi → investigasi → ditindaklanjuti → selesai |
+| **Investigasi** | Root cause analysis, faktor kontributor (8 faktor), PIC, follow-up, management review |
+| **Dashboard** | Statistik & trend bulanan/tahunan dengan filter unit |
+| **Master Data** | CRUD ruangan & users via API admin |
 | **Role-Based Access** | 6 role: pelapor, validator, pmkp, kepala_unit, manajemen, admin |
-| **Notifikasi** | Real-time saat insiden baru, deadline investigasi |
-| **Export** | Excel (.xlsx) & PDF — dengan filter tanggal/unit/severity |
+| **Notifikasi** | Real-time saat insiden baru & scheduler deadline H-7, H-3, H-1, overdue |
+| **Export** | Excel (.xlsx) & PDF — filter tanggal/unit/severity/ruangan/status |
+| **Laporan** | Modul khusus export dengan kolom yang bisa dipilih |
 | **Audit Trail** | Semua aksi tercatat (siapa, apa, kapan) |
 | **Dokumentasi API** | Swagger UI interaktif di `/api/v1/docs` |
 | **Just Culture** | Pelaporan anonim, tanpa menyalahkan |
@@ -44,11 +47,12 @@ SI-API adalah sistem internal untuk pelaporan, analisa, dan investigasi insiden 
 |-------|-----------|
 | Backend | Node.js 24, Express, SQLite (sql.js) |
 | Frontend | React 19, Vite 8, React Router |
-| Auth | JWT, bcryptjs |
+| Auth | JWT, bcryptjs, must-change-password |
 | Validation | Zod 4 |
 | Logging | Pino |
+| Scheduler | node-cron (deadline check setiap 07:00) |
 | Export | PDFKit, xlsx |
-| Deployment | Docker, systemd, pm2 |
+| Deployment | Docker multi-stage, systemd |
 
 ## Panduan Cepat
 
@@ -105,6 +109,8 @@ Akses: **http://localhost:3000**
 | `kepala_igd` | `12345` | Kepala Unit | IGD |
 | `manajemen1` | `12345` | Manajemen | Direksi |
 
+Semua user default memiliki flag `must_change_password` — akan diminta ganti password saat login pertama.
+
 ---
 
 ## Deployment
@@ -114,6 +120,8 @@ Akses: **http://localhost:3000**
 ```bash
 docker compose up -d --build
 ```
+
+Docker multi-stage build + healthcheck + auto-migrate.
 
 ### Systemd (manual)
 
@@ -140,15 +148,6 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now si-api
 ```
 
-### PM2 (auto-restart tanpa root)
-
-```bash
-npm install -g pm2
-pm2 start src/index.js --name si-api --env NODE_ENV=production
-pm2 save
-pm2 startup   # ikuti instruksi sudo
-```
-
 ### Deploy Script
 
 ```bash
@@ -165,25 +164,25 @@ sudo bash deploy.sh
 si-api/
 ├── src/
 │   ├── config/         # Database, migration, seed, swagger
-│   ├── controllers/    # Route handlers
+│   ├── controllers/    # Route handlers (9 controller)
 │   ├── middleware/      # Auth, validation, security, audit, error
-│   ├── models/         # User, Incident, Investigation, Notification
-│   ├── routes/         # Express routers
-│   ├── services/       # Grading, notification
-│   ├── utils/          # Logger
-│   ├── __tests__/      # Unit & integration tests (76)
-│   └── index.js        # Entry point
+│   ├── models/         # User, Incident, Investigation, Notification, Ruangan, Settings
+│   ├── routes/         # Express routers (10 route files)
+│   ├── services/       # Grading, notification, scheduler
+│   ├── utils/          # Logger (Pino)
+│   ├── __tests__/      # Unit & integration tests (76+)
+│   └── index.js        # Entry point (auto-migrate + scheduler)
 ├── frontend/
 │   ├── public/         # Logo, favicon
-│   ├── src/            # React SPA
+│   ├── src/            # React SPA (pages, components, context)
 │   └── dist/           # Production build
-├── scripts/            # Tools (push.js)
-├── .github/workflows/  # CI/CD pipeline
-├── Dockerfile
+├── scripts/            # Tools (push.js — GitHub API push)
+├── .github/workflows/  # CI (test) + Docker build & push
+├── Dockerfile           # Multi-stage build (backend + frontend)
 ├── docker-compose.yml
 ├── deploy.sh           # Instalasi cepat
 ├── install.md          # Panduan instalasi detail
-└── panduan.md          # Panduan pengguna per role
+└── dokumentasi.md      # Dokumentasi perubahan audit
 ```
 
 ## API Documentation
@@ -200,16 +199,21 @@ http://[server-ip]:3000/api/v1/docs
 |--------|----------|-----------|
 | POST | `/api/v1/auth/login` | Login |
 | GET | `/api/v1/auth/me` | Profil user |
-| POST | `/api/v1/incidents` | Buat laporan |
+| POST | `/api/v1/incidents` | Buat laporan (14+ field) |
 | GET | `/api/v1/incidents` | Daftar insiden (pagination + filter) |
-| PATCH | `/api/v1/incidents/:id/grade` | Grading severity |
-| PATCH | `/api/v1/incidents/:id/status` | Update status |
+| PATCH | `/api/v1/incidents/:id/grade` | Grading severity (regrade didukung) |
+| PATCH | `/api/v1/incidents/:id/status` | Update status (state machine) |
 | PATCH | `/api/v1/investigations/:id/complete` | Lengkapi investigasi |
 | GET | `/api/v1/dashboard/stats` | Statistik dashboard |
 | GET | `/api/v1/dashboard/trends` | Trend bulanan/tahunan |
+| GET | `/api/v1/master/ruangan` | Daftar ruangan |
+| GET | `/api/v1/master/users` | Daftar users (admin) |
+| GET | `/api/v1/laporan` | Data laporan |
+| GET | `/api/v1/laporan/export/excel` | Export Excel |
+| GET | `/api/v1/laporan/export/pdf` | Export PDF |
 | GET | `/api/v1/notifications` | Notifikasi user |
-| GET | `/api/v1/export/excel` | Export Excel |
-| GET | `/api/v1/export/pdf` | Export PDF |
+| GET | `/api/v1/settings` | Pengaturan sistem |
+| GET | `/api/v1/health` | Health check |
 
 ## Testing
 
@@ -219,7 +223,7 @@ npm run test:watch    # Watch mode
 npm run test:coverage # Dengan coverage
 ```
 
-76 test mencakup: middleware, model (CRUD), dan API integration (auth, RBAC, CRUD, pagination, validasi).
+76+ test mencakup: middleware, model (CRUD), dan API integration (auth, RBAC, CRUD, pagination, validasi, grading).
 
 ---
 

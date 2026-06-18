@@ -13,9 +13,10 @@ async function create(req, res, next) {
     const id = uuidv4();
     const grade = data.grade_otomatis || (
       data.probabilitas && data.dampak
-        ? (() => { const s = data.probabilitas * data.dampak; return s <= 4 ? 'BIRU' : s <= 8 ? 'HIJAU' : s <= 15 ? 'KUNING' : 'MERAH'; })()
+        ? (() => { const s = data.probabilitas * data.dampak; return s <= 4 ? 'biru' : s <= 8 ? 'hijau' : s <= 15 ? 'kuning' : 'merah'; })()
         : null
     );
+    const severity = grade || null;
 
     const incident = await Incident.create({
       id,
@@ -39,11 +40,18 @@ async function create(req, res, next) {
       probabilitas: data.probabilitas,
       dampak: data.dampak,
       grade_otomatis: grade,
+      severity,
       akibat_insiden: data.akibat_insiden,
       tindakan_awal: data.tindakan_awal,
       tindakan_oleh: data.tindakan_oleh,
       pernah_terjadi: data.pernah_terjadi || 'Tidak',
       pencegahan_ulang: data.pencegahan_ulang,
+      incident_summary: data.incident_summary,
+      tipe_insiden: data.tipe_insiden,
+      subtipe_insiden: data.subtipe_insiden,
+      spesialisasi: data.spesialisasi,
+      unit_penyebab: data.unit_penyebab,
+      first_reporter: data.first_reporter,
     });
 
     await notifyNewIncident(incident);
@@ -57,10 +65,10 @@ async function create(req, res, next) {
 
 async function list(req, res, next) {
   try {
-    const { status, severity, incident_type, unit, start_date, end_date, search, page = '1', limit = '20' } = req.query;
+    const { status, severity, incident_type, unit, location, ruangan_id, start_date, end_date, search, page = '1', limit = '20' } = req.query;
     const filters = {};
 
-    if (req.user.role === 'kepala_unit') {
+    if (req.user.role === 'kepala_unit' || req.user.role === 'pelapor') {
       filters.unit = req.user.unit;
     }
 
@@ -68,6 +76,8 @@ async function list(req, res, next) {
     if (severity) filters.severity = severity;
     if (incident_type) filters.incident_type = incident_type;
     if (unit && ['admin', 'pmkp', 'manajemen'].includes(req.user.role)) filters.unit = unit;
+    if (location) filters.location = location;
+    if (ruangan_id && ['admin', 'pmkp', 'manajemen'].includes(req.user.role)) filters.ruangan_id = ruangan_id;
     if (start_date) filters.start_date = start_date;
     if (end_date) filters.end_date = end_date;
     if (search) filters.search = search;
@@ -122,15 +132,24 @@ async function grade(req, res, next) {
 
     const incident = await Incident.findById(req.params.id);
     if (!incident) throw new AppError('Incident not found', 404);
-    if (incident.severity) throw new AppError('Incident already graded', 409);
 
-    const result = await gradeIncident(req.params.id, severity, req.user.id);
-    logger.info({ incidentId: req.params.id, severity, by: req.user.id }, 'Incident graded');
+    const isRegrade = !!incident.severity;
+    const result = await gradeIncident(req.params.id, severity, req.user.id, isRegrade);
+    logger.info({ incidentId: req.params.id, severity, by: req.user.id, regrade: isRegrade }, 'Incident graded');
     res.json(result);
   } catch (err) {
     next(err);
   }
 }
+
+const validTransitions = {
+  dilaporkan: ['divalidasi', 'ditolak'],
+  divalidasi: ['investigasi', 'ditolak'],
+  investigasi: ['ditindaklanjuti', 'ditolak'],
+  ditindaklanjuti: ['selesai', 'ditolak'],
+  selesai: [],
+  ditolak: [],
+};
 
 async function updateStatus(req, res, next) {
   try {
@@ -138,13 +157,31 @@ async function updateStatus(req, res, next) {
 
     const incident = await Incident.findById(req.params.id);
     if (!incident) throw new AppError('Incident not found', 404);
+    if (incident.status === status) {
+      return res.json({ id: req.params.id, status });
+    }
+
+    const allowed = validTransitions[incident.status] || [];
+    if (!allowed.includes(status)) {
+      throw new AppError(`Status cannot be changed from "${incident.status}" to "${status}". Allowed: ${allowed.join(', ') || 'none'}`, 400);
+    }
 
     await Incident.update(req.params.id, { status });
-    logger.info({ incidentId: req.params.id, status, by: req.user.id }, 'Incident status updated');
+    logger.info({ incidentId: req.params.id, from: incident.status, to: status, by: req.user.id }, 'Incident status updated');
     res.json({ id: req.params.id, status });
   } catch (err) {
     next(err);
   }
 }
 
-module.exports = { create, list, getById, grade, updateStatus };
+async function remove(req, res, next) {
+  try {
+    const incident = await Incident.findById(req.params.id);
+    if (!incident) throw new AppError('Incident not found', 404);
+    await Incident.delete(req.params.id);
+    logger.info({ incidentId: req.params.id, by: req.user.id }, 'Incident deleted');
+    res.json({ id: req.params.id, deleted: true });
+  } catch (err) { next(err); }
+}
+
+module.exports = { create, list, getById, grade, updateStatus, remove };

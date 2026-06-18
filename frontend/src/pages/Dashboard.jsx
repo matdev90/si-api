@@ -3,12 +3,19 @@ import { useAuth } from '../context/AuthContext';
 import * as api from '../api/client';
 import {
   PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, AreaChart, Area,
 } from 'recharts';
 
 const GRADE_COLORS = { merah: '#EF4444', kuning: '#F59E0B', hijau: '#10B981', biru: '#3B82F6' };
 const GRADE_LABELS = { merah: 'Merah', kuning: 'Kuning', hijau: 'Hijau', biru: 'Biru' };
 const GRADE_ORDER = ['merah', 'kuning', 'hijau', 'biru'];
+
+const cardMeta = [
+  { label: 'Total Insiden', key: 'total', icon: '📊', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+  { label: 'Baru', key: 'baru', icon: '📝', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
+  { label: 'Diproses', key: 'diproses', icon: '⏳', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+  { label: 'Selesai', key: 'selesai', icon: '✅', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
+];
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -27,23 +34,36 @@ export default function Dashboard() {
   })) : [];
 
   const statusBars = stats ? [
-    { name: 'Baru', value: stats.baru || 0, fill: '#3B82F6' },
-    { name: 'Diproses', value: stats.diproses || 0, fill: '#F59E0B' },
+    { name: 'Baru', value: stats.baru || 0, fill: '#4facfe' },
+    { name: 'Diproses', value: stats.diproses || 0, fill: '#f59e0b' },
     { name: 'Selesai', value: stats.selesai || 0, fill: '#10B981' },
   ] : [];
 
   const trendBars = trends.length > 0 ? trends.slice(-8).map(t => ({
     name: t.periode?.length > 5 ? t.periode.slice(0, 5) : t.periode,
-    Total: t.total,
-    Merah: t.merah || 0, Kuning: t.kuning || 0,
-    Hijau: t.hijau || 0, Biru: t.biru || 0,
+    total: t.total,
+    merah: t.merah || 0, kuning: t.kuning || 0,
+    hijau: t.hijau || 0, biru: t.biru || 0,
   })) : [];
 
   return (
     <div className="page">
+      {/* Floating decorative particles */}
+      <div className="dash-particles" aria-hidden="true">
+        {['●', '●', '◆', '■', '▲', '●', '◆', '■'].map((s, i) => (
+          <span key={i} className="dash-particle" style={{
+            left: `${10 + (i * 12) % 80}%`,
+            animationDelay: `${i * 0.7}s`,
+            animationDuration: `${4 + (i % 3) * 2}s`,
+            fontSize: `${10 + (i % 4) * 6}px`,
+            opacity: 0.08 + (i % 3) * 0.03,
+          }}>{s}</span>
+        ))}
+      </div>
+
       <div className="page-header">
         <div>
-          <h1>Dashboard</h1>
+          <h1>Dashboard Insiden Keselamatan Pasien</h1>
           <p>Selamat datang kembali, {user?.name}</p>
         </div>
         {notifCount > 0 && (
@@ -53,27 +73,35 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Stat Cards */}
+      {/* Dynamic Stat Cards */}
       <div className="stat-row">
-        {[
-          { label: 'Total Insiden', value: stats?.total, icon: '📊', cls: 'blue' },
-          { label: 'Baru', value: stats?.baru, icon: '📝', cls: 'indigo' },
-          { label: 'Diproses', value: stats?.diproses, icon: '⏳', cls: 'amber' },
-          { label: 'Selesai', value: stats?.selesai, icon: '✅', cls: 'green' },
-        ].map(s => (
-          <div key={s.label} className="stat-card-modern">
-            <div className={`stat-card-icon ${s.cls}`}>{s.icon}</div>
-            <div className="stat-card-body">
-              <span className="stat-card-value">{s.value ?? '-'}</span>
-              <span className="stat-card-label">{s.label}</span>
+        {cardMeta.map((c, i) => (
+          <div key={c.key} className="dash-stat-card" style={{ '--card-grad': c.gradient }}
+            onMouseMove={e => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
+              const y = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
+              e.currentTarget.style.setProperty('--rot-x', `${y}deg`);
+              e.currentTarget.style.setProperty('--rot-y', `${x}deg`);
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.setProperty('--rot-x', `0deg`);
+              e.currentTarget.style.setProperty('--rot-y', `0deg`);
+            }}>
+            <div className="dash-stat-glow" />
+            <div className="dash-stat-icon">{c.icon}</div>
+            <div className="dash-stat-body">
+              <span className="dash-stat-value">{stats?.[c.key] ?? '-'}</span>
+              <span className="dash-stat-label">{c.label}</span>
             </div>
+            <div className="dash-stat-shine" />
           </div>
         ))}
       </div>
 
       {/* Row 1: Pie + Bar */}
       <div className="chart-row">
-        <div className="chart-card">
+        <div className="chart-card dash-chart-card" style={{ animationDelay: '0.1s' }}>
           <h3 className="chart-title">Distribusi Severity</h3>
           {severityPie.length > 0 ? (
             <div className="donut-wrapper">
@@ -101,7 +129,7 @@ export default function Dashboard() {
           ) : <p className="chart-empty">Belum ada data</p>}
         </div>
 
-        <div className="chart-card">
+        <div className="chart-card dash-chart-card" style={{ animationDelay: '0.2s' }}>
           <h3 className="chart-title">Status Insiden</h3>
           {statusBars.some(d => d.value > 0) ? (
             <ResponsiveContainer width="100%" height={220}>
@@ -124,49 +152,46 @@ export default function Dashboard() {
 
       {/* Row 2: Trend + Grade Summary */}
       <div className="chart-row">
-        <div className="chart-card">
+        <div className="chart-card dash-chart-card" style={{ animationDelay: '0.3s' }}>
           <h3 className="chart-title">Tren Bulanan</h3>
           {trendBars.length > 0 ? (
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={trendBars} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+              <AreaChart data={trendBars} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis dataKey="name" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
                 <Tooltip />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: 11 }} />
-                <Bar dataKey="Total" fill="#3B82F6" radius={[4, 4, 0, 0]} maxBarSize={40} />
-              </BarChart>
+                <Area type="monotone" dataKey="total" stroke="#3B82F6" strokeWidth={2} fill="url(#trendGrad)" dot={{ r: 3, fill: '#3B82F6' }} />
+              </AreaChart>
             </ResponsiveContainer>
           ) : <p className="chart-empty">Belum ada data tren</p>}
         </div>
 
-        <div className="chart-card">
+        <div className="chart-card dash-chart-card" style={{ animationDelay: '0.4s' }}>
           <h3 className="chart-title">Ringkasan Grade</h3>
-          {severityPie.length > 0 ? (
-            <div className="grade-summary">
-              {severityPie.map(d => (
-                <div key={d.name} className="grade-card" style={{ borderLeftColor: d.color }}>
-                  <span className="grade-card-value" style={{ color: d.color }}>{d.value}</span>
-                  <span className="grade-card-label">{d.name}</span>
-                  <span className="grade-card-pct">
-                    {((d.value / (stats?.total || 1)) * 100).toFixed(1)}%
-                  </span>
+          <div className="grade-summary">
+            {severityPie.length > 0 ? severityPie.map(d => (
+              <div key={d.name} className="grade-card dash-grade-card" style={{ borderLeftColor: d.color }}>
+                <span className="grade-card-value" style={{ color: d.color }}>{d.value}</span>
+                <span className="grade-card-label">{d.name}</span>
+                <span className="grade-card-pct">
+                  {((d.value / (stats?.total || 1)) * 100).toFixed(1)}%
+                </span>
+                <div className="dash-grade-bar" style={{ background: `${d.color}33` }}>
+                  <div className="dash-grade-fill" style={{
+                    width: `${((d.value / (stats?.total || 1)) * 100)}%`,
+                    background: d.color,
+                  }} />
                 </div>
-              ))}
-            </div>
-          ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={severityPie} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={50}>
-                  {severityPie.map(e => <Cell key={e.name} fill={e.color} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
+              </div>
+            )) : <p className="chart-empty">Belum ada data</p>}
+          </div>
         </div>
       </div>
 

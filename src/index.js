@@ -27,6 +27,7 @@ const { securityMiddleware, authRateLimit } = require('./middleware/security');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const routes = require('./routes');
 const { getDatabase, closeDatabase } = require('./config/database');
+const { startScheduler } = require('./services/scheduler');
 const logger = require('./utils/logger');
 
 const app = express();
@@ -91,6 +92,8 @@ async function start() {
 
     await getDatabase();
     logger.info('Database connected');
+
+    startScheduler();
 
     const HOST = process.env.HOST || '0.0.0.0';
     app.listen(PORT, HOST, () => {
