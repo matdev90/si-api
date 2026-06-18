@@ -1,4 +1,5 @@
 const git = require('isomorphic-git');
+const http = require('isomorphic-git/http/node');
 const fs = require('fs');
 const path = require('path');
 
@@ -53,6 +54,7 @@ async function main() {
 
   await git.push({
     fs,
+    http,
     dir: DIR,
     url: 'https://github.com/matdev90/si-api.git',
     onAuth: () => ({ username: TOKEN, password: '' }),
